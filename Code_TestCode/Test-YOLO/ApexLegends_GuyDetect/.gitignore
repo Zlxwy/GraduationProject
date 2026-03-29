@@ -1,0 +1,10 @@
+images/*
+labels/*
+runs/detect/train/*.jpg
+runs/detect/train/*.png
+runs/detect/train*/*.jpg
+runs/detect/train*/*.png
+runs/detect/predict/*.jpg
+runs/detect/predict/*.png
+runs/detect/predict*/*.jpg
+runs/detect/predict*/*.png

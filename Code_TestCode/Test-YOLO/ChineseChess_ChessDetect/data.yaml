@@ -1,0 +1,21 @@
+path: ./
+train: ./images/train/
+val: ./images/val/
+train_label: ./labels/train/
+val_label: ./labels/val/
+
+names:
+  0: B_KING
+  1: B_CAR
+  2: B_HORSE
+  3: B_CANNON
+  4: B_BISHOP
+  5: B_ELEPHANT
+  6: B_PAWN
+  7: R_KING
+  8: R_CAR
+  9: R_HORSE
+  10: R_CANNON
+  11: R_BISHOP
+  12: R_ELEPHANT
+  13: R_PAWN
