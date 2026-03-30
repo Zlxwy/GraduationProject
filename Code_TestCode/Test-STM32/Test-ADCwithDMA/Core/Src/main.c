@@ -192,7 +192,7 @@ int main(void)
       Potentionmeter_GetPosition(&RightStick_X) * 100.0f
     ); // 显示比例值，范围[-1,1]
     uart_printf(&huart3, "\r\n");
-    HAL_Delay(200);
+    HAL_Delay(10);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
