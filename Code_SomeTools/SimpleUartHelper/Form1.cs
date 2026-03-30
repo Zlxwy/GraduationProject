@@ -32,23 +32,6 @@ namespace SimpleUartHelper
                 ClosePort();
         }
 
-        private void btnToggleTheme_Click(object? sender, EventArgs e)
-        {
-            _isDarkTheme = !_isDarkTheme;
-            if (_isDarkTheme)
-            {
-                txtReceive.BackColor = Color.FromArgb(30, 30, 30);
-                txtReceive.ForeColor = Color.FromArgb(220, 220, 220);
-                btnToggleTheme.Text = "浅色模式";
-            }
-            else
-            {
-                txtReceive.BackColor = Color.White;
-                txtReceive.ForeColor = Color.Black;
-                btnToggleTheme.Text = "深色模式";
-            }
-        }
-
         private void OpenPort()
         {
             var portName = cmbPortName.SelectedItem?.ToString();

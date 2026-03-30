@@ -25,7 +25,6 @@
             cmbDataBits = new ComboBox();
             cmbParity = new ComboBox();
             btnOpenClose = new Button();
-            btnToggleTheme = new Button();
             txtReceive = new TextBox();
             panelTop.SuspendLayout();
             SuspendLayout();
@@ -34,7 +33,7 @@
             panelTop.Dock = DockStyle.Top;
             panelTop.Height = 45;
             panelTop.Padding = new Padding(6, 8, 6, 0);
-            panelTop.Controls.AddRange(new Control[] { cmbPortName, cmbBaudRate, cmbDataBits, cmbParity, cmbStopBits, btnOpenClose, btnToggleTheme });
+            panelTop.Controls.AddRange(new Control[] { cmbPortName, cmbBaudRate, cmbDataBits, cmbParity, cmbStopBits, btnOpenClose });
 
             // cmbPortName
             cmbPortName.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -82,14 +81,6 @@
             btnOpenClose.TabStop = false;
             btnOpenClose.Click += btnOpenClose_Click;
 
-            // btnToggleTheme
-            btnToggleTheme.Location = new Point(482, 7);
-            btnToggleTheme.Size = new Size(75, 28);
-            btnToggleTheme.Text = "浅色模式";
-            btnToggleTheme.UseVisualStyleBackColor = true;
-            btnToggleTheme.TabStop = false;
-            btnToggleTheme.Click += btnToggleTheme_Click;
-
             // txtReceive
             txtReceive.Dock = DockStyle.Fill;
             txtReceive.Multiline = true;
@@ -123,7 +114,6 @@
         private ComboBox cmbParity;
         private ComboBox cmbStopBits;
         private Button btnOpenClose;
-        private Button btnToggleTheme;
         private TextBox txtReceive;
     }
 }
