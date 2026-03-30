@@ -1,1 +1,7 @@
 底部连接STM32排针那一部分，TXD和RXD丝印标注反了
+
+给π122U31的另一端也上拉两个电阻
+
+串口指示灯的传输方向丝印标注反了，上至下为Master>Slave用蓝色LED，下至上为Slave>Master用翠绿色LED
+
+把10p接遥控器的那个排针的VCC和GND取消连接STM32_3V3和GND
