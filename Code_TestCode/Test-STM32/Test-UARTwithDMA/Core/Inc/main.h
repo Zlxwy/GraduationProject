@@ -53,7 +53,10 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void uart_send_byte_blocking(UART_HandleTypeDef *huart, uint8_t abyte);
+void uart_send_array(UART_HandleTypeDef *huart, uint8_t *array, size_t len);
+void uart_send_string(UART_HandleTypeDef *huart, char *string);
+void uart_printf(UART_HandleTypeDef *huart, char *format, ...);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
