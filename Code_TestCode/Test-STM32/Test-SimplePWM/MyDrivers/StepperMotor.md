@@ -32,11 +32,13 @@
 
 ## 代码使用示例
 ```c
+#include "StepperMotor.h"
+
 #define Dir_GPIO_Port  GPIOB
 #define Dir_Pin  GPIO_PIN_8
 StepperMotor_t BoomStepperMotor;
 
-
+/*需要在定时中断中调用一条函数，用于更新步进电机的运行状态*/
 void TIMx_IRQHandler(void) {
   if ( __HAL_TIM_GET_FLAG(&htimx, TIM_FLAG_UPDATE) ) {
     StepperMotor_FuncCalled_InTimerInterrupt(&BoomStepperMotor);
@@ -44,7 +46,6 @@ void TIMx_IRQHandler(void) {
     return;
   }
 }
-
 
 int main(void) {
   StepperMotor_Init( // 初始化步进电机
@@ -80,9 +81,4 @@ int main(void) {
     Delay_ms(1000); // 延时1秒
   }
 }
-
-
-
-
-
 ```
