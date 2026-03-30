@@ -29,6 +29,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include "Potentionmeter.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +51,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+Potentionmeter_t LeftStick_Y; // 这个方向上的摇杆连接了PA0(ADC1_IN0)
+Potentionmeter_t LeftStick_X; // 这个方向上的摇杆连接了PA1(ADC1_IN1)
+Potentionmeter_t RightStick_Y; // 这个方向上的摇杆连接了PA2(ADC1_IN2)
+Potentionmeter_t RightStick_X; // 这个方向上的摇杆连接了PA3(ADC1_IN3)
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -154,22 +159,40 @@ int main(void)
   MX_ADC1_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  uint16_t ADC_ConvValue[4];
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC_ConvValue, 4);
+
+  Potentionmeter_Init(&LeftStick_Y, 0, 3.3f, 0, 4095, 1900, 2200);
+  Potentionmeter_Init(&LeftStick_X, 1, 3.3f, 0, 4095, 1900, 2200);
+  Potentionmeter_Init(&RightStick_Y, 2, 3.3f, 0, 4095, 1900, 2200);
+  Potentionmeter_Init(&RightStick_X, 3, 3.3f, 0, 4095, 1900, 2200);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // uart_printf(&huart3, "Hello World!\r\n");
-    // HAL_Delay(1000);
-    uart_printf(&huart3, "----------------------\r\n");
-    uart_printf(&huart3, "ADC_ConvValue[0] = %d\r\n", ADC_ConvValue[0]);
-    uart_printf(&huart3, "ADC_ConvValue[1] = %d\r\n", ADC_ConvValue[1]);
-    uart_printf(&huart3, "ADC_ConvValue[2] = %d\r\n", ADC_ConvValue[2]);
-    uart_printf(&huart3, "ADC_ConvValue[3] = %d\r\n", ADC_ConvValue[3]);
-    uart_printf(&huart3, "----------------------\r\n");
+    uart_printf(&huart3, "LeftStick_Y: %4d, LeftStick_X: %4d, RightStick_Y: %4d, RightStick_X: %4d\n",
+      Potentionmeter_GetConvValue(&LeftStick_Y), 
+      Potentionmeter_GetConvValue(&LeftStick_X), 
+      Potentionmeter_GetConvValue(&RightStick_Y), 
+      Potentionmeter_GetConvValue(&RightStick_X)
+    ); // 显示原始转换值，范围[0,4095]
+
+    uart_printf(&huart3, "LeftStick_Y: %1.2fV, LeftStick_X: %1.2fV, RightStick_Y: %1.2fV, RightStick_X: %1.2fV\n",
+      Potentionmeter_GetVoltage(&LeftStick_Y), 
+      Potentionmeter_GetVoltage(&LeftStick_X), 
+      Potentionmeter_GetVoltage(&RightStick_Y), 
+      Potentionmeter_GetVoltage(&RightStick_X)
+    ); // 显示电压值，范围[0,3.3]
+
+    uart_printf(&huart3, "LeftStick_Y: %3.2f%%, LeftStick_X: %3.2f%%, RightStick_Y: %3.2f%%, RightStick_X: %3.2f%%\n",
+      Potentionmeter_GetPosition(&LeftStick_Y) * 100.0f, 
+      Potentionmeter_GetPosition(&LeftStick_X) * 100.0f, 
+      Potentionmeter_GetPosition(&RightStick_Y) * 100.0f, 
+      Potentionmeter_GetPosition(&RightStick_X) * 100.0f
+    ); // 显示比例值，范围[-1,1]
+    uart_printf(&huart3, "\r\n");
+    HAL_Delay(200);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
