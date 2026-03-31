@@ -55,7 +55,7 @@ void USARTx_IRQHandler(void) {
 }
 
 int main(void) {
-  HUartIdleDmaRx_Init(&ttUIDR, &huartx, &hdma_usartx_rx); // 初始化串口空闲中断DMA接收
+  HUartIdleDmaRx_Init(&ttUIDR, &huartx, &hdma_usartx_rx); // 初始化
 
   while (1) {
     if ( UartIdleDmaRx_GetRecvFlag(&ttUIDR) ) { // 获取是否接收数据标志位

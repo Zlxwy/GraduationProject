@@ -34,9 +34,17 @@ void UartIdleDmaRx_FuncCalled_InIdleInterrupt(UartIdleDmaRx_t* cThis) {
 
 
 bool UartIdleDmaRx_GetRecvFlag(UartIdleDmaRx_t* cThis) {
-  bool ret = cThis->RecvFlag;
-  cThis->RecvFlag = false;
-  return ret;
+  if (cThis->RecvFlag) {
+    cThis->RecvFlag = false;
+    return true;
+  } else {
+    return false;
+  }
+
+  /*以下代码可能会造成一些时序问题，虽然看起来和上面的代码相同，但绝对不能用*/
+  // bool ret = cThis->RecvFlag;
+  // cThis->RecvFlag = false;
+  // return ret;
 }
 
 uint8_t* UartIdleDmaRx_GetRecvBuf(UartIdleDmaRx_t* cThis) {
