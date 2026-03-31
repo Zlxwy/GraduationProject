@@ -1,5 +1,5 @@
-#ifndef __UART_IDLE_DMA_RX_H__
-#define __UART_IDLE_DMA_RX_H__
+#ifndef __UART_DMA_IDLE_RX_H__
+#define __UART_DMA_IDLE_RX_H__
 
 #include "stm32f4xx_hal.h"
 #include "main.h"
