@@ -159,8 +159,9 @@ int main(void)
   MX_ADC1_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC_ConvValue, 4);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC_ConvValue, 4); // 第一步必须要先把这个打开，打开后才能初始化
 
+  /*电位器对象，ADC数组索引，参考电压，转换最小值，转换最大值，回中飘动最小值，回中飘动最大值*/
   Potentionmeter_Init(&LeftStick_Y, 0, 3.3f, 0, 4095, 1900, 2200);
   Potentionmeter_Init(&LeftStick_X, 1, 3.3f, 0, 4095, 1900, 2200);
   Potentionmeter_Init(&RightStick_Y, 2, 3.3f, 0, 4095, 1900, 2200);
