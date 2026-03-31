@@ -31,10 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -56,19 +53,16 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-void uart_send_byte_blocking(UART_HandleTypeDef *huart, uint8_t abyte);
-void uart_send_array(UART_HandleTypeDef *huart, uint8_t *array, size_t len);
-void uart_send_string(UART_HandleTypeDef *huart, char *string);
-void uart_printf(UART_HandleTypeDef *huart, char *format, ...);
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
 extern UART_HandleTypeDef huart3;
+extern DMA_HandleTypeDef hdma_usart3_rx;
 extern uint8_t rx_buf[256];
 extern uint32_t rx_count;
-extern bool rx_flag;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

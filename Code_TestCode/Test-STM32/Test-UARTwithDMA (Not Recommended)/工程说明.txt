@@ -1,0 +1,6 @@
+【不推荐，性能不太好】
+完全使用CubeMX的HAL库接口，串口通过DMA接收数据，配合HAL库的接收完成回调函数，实现不定长数据接收。
+
+## 配置
+UART基本配置
+UART配置界面的DMA Settings，添加USART3_RX，Mode为Circular

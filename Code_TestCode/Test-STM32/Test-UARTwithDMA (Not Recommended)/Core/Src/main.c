@@ -24,7 +24,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,69 +59,17 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/**
- * @brief  串口发送一个字节，阻塞方式。
- * @note   等待发送缓冲区为空，再发送。
- * @param  huart: USART handle
- * @param  abyte: 待发送的字节
- * @retval None
- */
-void uart_send_byte_blocking(UART_HandleTypeDef *huart, uint8_t abyte) {
-  while ( !__HAL_UART_GET_FLAG(huart, UART_FLAG_TXE) ); // TX不为空，则持续循环
-  huart->Instance->DR = abyte; // TX为空了，则跳出以上while循环发送字节
-}
-
-/**
- * @brief  串口发送一个字节数组，阻塞方式。
- * @note   等待发送缓冲区为空，再发送。
- * @attention 这个函数可以发送带有'\0'(0x00)的字节串
- * @param  huart: USART handle
- * @param  array: 待发送的字节数组
- * @param  len: 待发送的字节数组长度
- * @retval None
- */
-void uart_send_array(UART_HandleTypeDef *huart, uint8_t *array, size_t len) {
-  for (size_t i=0; i<len; i++) {
-    uart_send_byte_blocking(huart, array[i]);
-  }
-}
-
-/**
- * @brief  串口发送一个字符串，阻塞方式。
- * @note   等待发送缓冲区为空，再发送。
- * @attention 这个函数不可以发送带有'\0'(0x00)的字节串
- * @param  huart: USART handle
- * @param  string: 待发送的字符串
- * @retval None
- */
-void uart_send_string(UART_HandleTypeDef *huart, char *string) {
-  uart_send_array(huart, (uint8_t *)string, strlen(string));
-}
-
-/**
- * @brief  串口printf函数，用于向串口发送格式化字符串信息。
- * @note   最大长度为128字节。
- * @attention 这个函数不可以发送带有'\0'(0x00)的字节串
- * @param  huart: USART handle
- * @param  format: format string
- * @param  ...: arguments list
- * @retval None
- */
-#define USART_DATALEN_MAX  256
-void uart_printf(UART_HandleTypeDef *huart, char *format, ...) {
-  char SendBuf[USART_DATALEN_MAX];
-  va_list args;
-  va_start(args, format);
-  vsnprintf(SendBuf, sizeof(SendBuf), format, args);
-  va_end(args);
-  for (uint16_t i=0; SendBuf[i]!='\0'; i++) {
-    uart_send_byte_blocking(huart, SendBuf[i]);
-  }
-}
-
 uint8_t rx_buf[256];
 uint32_t rx_count;
-bool rx_flag = false;
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
+  if (huart->Instance == USART3) {
+    rx_count = Size; // 接收数据长度
+    HAL_UART_Transmit(huart, rx_buf, rx_count, 0xFFFF);
+    HAL_UART_Transmit(huart, "\r\n", strlen("\r\n"), 0xFFFF);
+    HAL_UART_DMAStop(huart);
+    HAL_UARTEx_ReceiveToIdle_DMA(huart, rx_buf, sizeof(rx_buf)); // 重新启动DMA接收
+  }
+}
 /* USER CODE END 0 */
 
 /**
@@ -153,20 +104,13 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  __HAL_UART_ENABLE_IT(&huart3, UART_IT_IDLE); // 使能串口空闲中断
-  HAL_UART_Receive_DMA(&huart3, rx_buf, sizeof(rx_buf)); // 启动DMA接收
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart3, rx_buf, sizeof(rx_buf)); // 启动DMA接收
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    if (rx_flag) { // 如果接收到了数据
-      rx_flag = false; // 清零标志位
-      uart_printf(&huart3, "rx_count: %d\r\nrx_data: ", rx_count);
-      uart_send_array(&huart3, rx_buf, rx_count);
-      uart_printf(&huart3, "\r\n");
-    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
