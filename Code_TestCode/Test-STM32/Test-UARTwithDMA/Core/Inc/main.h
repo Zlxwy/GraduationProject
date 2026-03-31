@@ -35,6 +35,7 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "UartIdleDmaRx.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -65,10 +66,8 @@ void uart_printf(UART_HandleTypeDef *huart, char *format, ...);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
+extern DMA_HandleTypeDef hdma_usart3_rx;
 extern UART_HandleTypeDef huart3;
-extern uint8_t rx_buf[256];
-extern uint32_t rx_count;
-extern bool rx_flag;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

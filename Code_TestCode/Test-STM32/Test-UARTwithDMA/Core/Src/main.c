@@ -116,9 +116,7 @@ void uart_printf(UART_HandleTypeDef *huart, char *format, ...) {
   }
 }
 
-uint8_t rx_buf[256];
-uint32_t rx_count;
-bool rx_flag = false;
+UartIdleDmaRx_t ttUIDR;
 /* USER CODE END 0 */
 
 /**
@@ -153,16 +151,16 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  __HAL_UART_ENABLE_IT(&huart3, UART_IT_IDLE); // 使能串口空闲中断
-  HAL_UART_Receive_DMA(&huart3, rx_buf, sizeof(rx_buf)); // 启动DMA接收
+  UartIdleDmaRx_Init(&ttUIDR, &huart3, &hdma_usart3_rx);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    if (rx_flag) { // 如果接收到了数据
-      rx_flag = false; // 清零标志位
+  while (1) {
+    if (UartIdleDmaRx_GetRecvFlag(&ttUIDR)) { // 获取是否接收数据标志位
+      size_t rx_count = UartIdleDmaRx_GetRecvLen(&ttUIDR); // 获取接收的字节数
+      uint8_t *rx_buf = UartIdleDmaRx_GetRecvBuf(&ttUIDR); // 获取接收的字节数组
+
       uart_printf(&huart3, "rx_count: %d\r\nrx_data: ", rx_count);
       uart_send_array(&huart3, rx_buf, rx_count);
       uart_printf(&huart3, "\r\n");

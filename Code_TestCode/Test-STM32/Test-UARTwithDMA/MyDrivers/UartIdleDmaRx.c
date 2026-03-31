@@ -26,7 +26,7 @@ void UartIdleDmaRx_FuncCalled_InIdleInterrupt(UartIdleDmaRx_t* cThis) {
   cThis->RecvLen = UART_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(cThis->hdmarx); // 接收到的字节数
   cThis->RecvFlag = true;
 
-  HAL_UART_DMAStop(cThis->hdmarx); // 停止DMA接收
+  HAL_UART_DMAStop(cThis->huart); // 停止DMA接收
   __HAL_DMA_SET_COUNTER(cThis->hdmarx, UART_RX_BUF_SIZE); // 重置DMA计数器
   HAL_UART_Receive_DMA(cThis->huart, cThis->RecvBuf, UART_RX_BUF_SIZE); // 重新启动DMA传输
 }
@@ -36,7 +36,9 @@ void UartIdleDmaRx_FuncCalled_InIdleInterrupt(UartIdleDmaRx_t* cThis) {
 
 
 bool UartIdleDmaRx_GetRecvFlag(UartIdleDmaRx_t* cThis) {
-  return cThis->RecvFlag;
+  bool ret = cThis->RecvFlag;
+  cThis->RecvFlag = false;
+  return ret;
 }
 
 uint8_t* UartIdleDmaRx_GetRecvBuf(UartIdleDmaRx_t* cThis) {
