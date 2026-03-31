@@ -50,10 +50,10 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 
 int main(void) {
   UartDmaQueueTx_Init(&ttUQDT, &huartx, &hdma_usartx_tx); // 初始化
-  UartDmaQueueTx_SendArray(&ttUQDT, "Hello, World!\n", strlen("Hello, World!\n"));
-  UartDmaQueueTx_SendArray(&ttUQDT, "Hello, STM32!\n", strlen("Hello, STM32!\n"));
-  UartDmaQueueTx_SendArray(&ttUQDT, "Hello, F407ZGT6!\n", strlen("Hello, F407ZGT6!\n"));
-  UartDmaQueueTx_SendArray(&ttUQDT, "\r\n", strlen("\r\n"));
+  UartDmaQueueTx_Printf(&ttUQDT, "Hello, World!\n");
+  UartDmaQueueTx_Printf(&ttUQDT, "Hello, STM32!\n");
+  UartDmaQueueTx_Printf(&ttUQDT, "Hello, F407ZGT6!\n");
+  UartDmaQueueTx_Printf(&ttUQDT, "\r\n");
 
   uint64_t cnt = 0;
   uint32_t a = 0;
@@ -61,9 +61,7 @@ int main(void) {
     UartDmaQueueTx_FuncCalled_InInfiniteLoop(&ttUQDT);
 
     if (a++ >= 1) {
-      uint8_t buf[50];
-      sprintf(buf, "[%010llu] Hello, World!\n", cnt++);
-      UartDmaQueueTx_SendArray(&ttUQDT, buf, strlen(buf));
+      UartDmaQueueTx_Printf(&ttUQDT, "[%010llu] Hello, World!\n", cnt++);
       a = 0;
     }
   }

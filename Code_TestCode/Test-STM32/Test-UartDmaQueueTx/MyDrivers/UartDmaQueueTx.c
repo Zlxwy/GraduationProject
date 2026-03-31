@@ -113,3 +113,25 @@ void UartDmaQueueTx_SendArray(UartDmaQueueTx_t *cThis, const uint8_t *SendArray,
   else return;
 
 }
+
+
+
+
+
+void UartDmaQueueTx_SendString(UartDmaQueueTx_t *cThis, const char *SendString) {
+  UartDmaQueueTx_SendArray(cThis, (const uint8_t *)SendString, strlen(SendString));
+}
+
+
+
+
+
+void UartDmaQueueTx_Printf(UartDmaQueueTx_t *cThis, const char *format, ...) {
+  char SendBuf[256];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(SendBuf, sizeof(SendBuf), format, args);
+  va_end(args);
+  UartDmaQueueTx_SendString(cThis, SendBuf);
+}
+ 

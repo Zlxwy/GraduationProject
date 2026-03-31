@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,10 +99,10 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   UartDmaQueueTx_Init(&ttUQDT, &huart3, &hdma_usart3_tx); // 初始化
-  UartDmaQueueTx_SendArray(&ttUQDT, "Hello, World!\n", strlen("Hello, World!\n"));
-  UartDmaQueueTx_SendArray(&ttUQDT, "Hello, STM32!\n", strlen("Hello, STM32!\n"));
-  UartDmaQueueTx_SendArray(&ttUQDT, "Hello, F407ZGT6!\n", strlen("Hello, F407ZGT6!\n"));
-  UartDmaQueueTx_SendArray(&ttUQDT, "\r\n", strlen("\r\n"));
+  UartDmaQueueTx_Printf(&ttUQDT, "Hello, World!\n");
+  UartDmaQueueTx_Printf(&ttUQDT, "Hello, STM32!\n");
+  UartDmaQueueTx_Printf(&ttUQDT, "Hello, F407ZGT6!\n");
+  UartDmaQueueTx_Printf(&ttUQDT, "\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -114,9 +114,7 @@ int main(void)
     UartDmaQueueTx_FuncCalled_InInfiniteLoop(&ttUQDT);
 
     if (a++ >= 1) {
-      uint8_t buf[50];
-      sprintf(buf, "[%010llu] Hello, World!\n", cnt++);
-      UartDmaQueueTx_SendArray(&ttUQDT, buf, strlen(buf));
+      UartDmaQueueTx_Printf(&ttUQDT, "[%010llu] Hello, World!\n", cnt++);
       a = 0;
     }
     /* USER CODE END WHILE */

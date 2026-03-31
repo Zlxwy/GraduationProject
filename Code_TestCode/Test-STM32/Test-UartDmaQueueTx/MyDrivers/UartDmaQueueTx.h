@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 #include "stm32f4xx_hal.h"
 #include "main.h"
 
@@ -34,6 +37,9 @@ void UartDmaQueueTx_Init(UartDmaQueueTx_t *cThis,
                         DMA_HandleTypeDef *hdmatx );
 void UartDmaQueueTx_FuncCalled_InCpltInterrupt(UartDmaQueueTx_t* cThis);
 void UartDmaQueueTx_FuncCalled_InInfiniteLoop(UartDmaQueueTx_t* cThis);
+
 void UartDmaQueueTx_SendArray(UartDmaQueueTx_t *cThis, const uint8_t *SendArray, size_t SendArrayLen);
+void UartDmaQueueTx_SendString(UartDmaQueueTx_t *cThis, const char *SendString);
+void UartDmaQueueTx_Printf(UartDmaQueueTx_t *cThis, const char *format, ...);
 
 #endif
