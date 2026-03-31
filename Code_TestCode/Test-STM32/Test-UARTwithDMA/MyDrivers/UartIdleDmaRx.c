@@ -20,11 +20,9 @@ void UartIdleDmaRx_Init(UartIdleDmaRx_t* cThis,
 
 
 void UartIdleDmaRx_FuncCalled_InIdleInterrupt(UartIdleDmaRx_t* cThis) {
-  __HAL_UART_CLEAR_IDLEFLAG(cThis->huart); // 清除IDLE标志位
-  __HAL_UART_CLEAR_FLAG(cThis->huart, UART_FLAG_IDLE); // 清除IDLE标志位
-
   cThis->RecvLen = UART_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(cThis->hdmarx); // 接收到的字节数
-  cThis->RecvFlag = true;
+  cThis->RecvBuf[cThis->RecvLen] = '\0'; // 补一个结束符
+  cThis->RecvFlag = true; // 挂起接收数据标志位
 
   HAL_UART_DMAStop(cThis->huart); // 停止DMA接收
   __HAL_DMA_SET_COUNTER(cThis->hdmarx, UART_RX_BUF_SIZE); // 重置DMA计数器

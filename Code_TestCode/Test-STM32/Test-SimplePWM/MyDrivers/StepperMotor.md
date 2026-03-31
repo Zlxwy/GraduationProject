@@ -36,15 +36,19 @@
 
 #define Dir_GPIO_Port  GPIOB
 #define Dir_Pin  GPIO_PIN_8
+extern TIM_HandleTypeDef htimx;
 StepperMotor_t BoomStepperMotor;
 
 /*需要在定时中断中调用一条函数，用于更新步进电机的运行状态*/
 void TIMx_IRQHandler(void) {
+  /* USER CODE BEGIN TIMx_IRQHandler 0 */
   if ( __HAL_TIM_GET_FLAG(&htimx, TIM_FLAG_UPDATE) ) {
-    StepperMotor_FuncCalled_InTimerInterrupt(&BoomStepperMotor);
+    StepperMotor_FuncCalled_InTimerInterrupt(&BoomStepperMotor); // 在定时中断调用这个函数
     __HAL_TIM_CLEAR_FLAG(&htimx, TIM_FLAG_UPDATE); // 清除更新中断标志位
     return;
   }
+  /* USER CODE END TIMx_IRQHandler 0 */
+  // ......
 }
 
 int main(void) {

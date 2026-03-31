@@ -220,6 +220,8 @@ void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
   if ( __HAL_UART_GET_FLAG(&huart3, UART_FLAG_IDLE) ) { // 确实是RXNE中断触发
+    __HAL_UART_CLEAR_IDLEFLAG(&huart3); // 清除IDLE标志位
+    __HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_IDLE); // 清除IDLE标志位
     UartIdleDmaRx_FuncCalled_InIdleInterrupt(&ttUIDR);
     return;
   }

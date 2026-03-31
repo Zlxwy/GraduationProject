@@ -51,7 +51,7 @@
         - DMA Request Settings
           * Mode: <u>Circular</u>
           * Peripheral Increment: <u>Unchecked</u>
-          * Memory Increment: <u>Unchecked</u>
+          * Memory Increment: <u>Checked</u>
           * Use Fifo: <u>Unchecked</u>
           * Peripheral Data Width: <u>Word</u>
           * Memory Data Width: <u>Word</u>

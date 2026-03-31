@@ -116,7 +116,7 @@ void uart_printf(UART_HandleTypeDef *huart, char *format, ...) {
   }
 }
 
-UartIdleDmaRx_t ttUIDR;
+UartIdleDmaRx_t ttUIDR; // 串口空闲中断DMA接收的结构体实例
 /* USER CODE END 0 */
 
 /**
@@ -151,18 +151,17 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  UartIdleDmaRx_Init(&ttUIDR, &huart3, &hdma_usart3_rx);
+  UartIdleDmaRx_Init(&ttUIDR, &huart3, &hdma_usart3_rx); // 初始化串口空闲中断DMA接收
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-    if (UartIdleDmaRx_GetRecvFlag(&ttUIDR)) { // 获取是否接收数据标志位
-      size_t rx_count = UartIdleDmaRx_GetRecvLen(&ttUIDR); // 获取接收的字节数
-      uint8_t *rx_buf = UartIdleDmaRx_GetRecvBuf(&ttUIDR); // 获取接收的字节数组
-
-      uart_printf(&huart3, "rx_count: %d\r\nrx_data: ", rx_count);
-      uart_send_array(&huart3, rx_buf, rx_count);
+    if ( UartIdleDmaRx_GetRecvFlag(&ttUIDR) ) { // 获取是否接收数据标志位
+      uart_printf(&huart3, "rx_count: %d\r\nrx_data: %s",
+        UartIdleDmaRx_GetRecvLen(&ttUIDR), // 获取接收的字节数
+        UartIdleDmaRx_GetRecvBuf(&ttUIDR) // 获取接收的字节数组
+      ); // 因为在接收完成后，补了个结束符'\0'，所以可以直接打印字符串
       uart_printf(&huart3, "\r\n");
     }
     /* USER CODE END WHILE */
