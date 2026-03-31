@@ -1,5 +1,5 @@
-* [STM32CubeMX配置](#stm32cubemx配置)
-* [代码使用示例](#代码使用示例)
+- [STM32CubeMX配置](#stm32cubemx配置)
+- [代码使用示例](#代码使用示例)
 
 ## STM32CubeMX配置
 
@@ -35,11 +35,11 @@
 
 ## 代码使用示例
 ```c
-#include "UartIdleDmaRx.h"
+#include "UartDmaIdleRx.h"
 
 extern UART_HandleTypeDef huartx;
 extern DMA_HandleTypeDef hdma_usartx_rx;
-UartIdleDmaRx_t ttUIDR; // 串口空闲中断DMA接收的结构体实例
+UartDmaIdleRx_t ttUIDR; // 串口空闲中断DMA接收的结构体实例
 
 /*需要在USARTx空闲中断中调用一条函数，用于处理接收完的一帧不定长数据*/
 void USARTx_IRQHandler(void) {
@@ -47,7 +47,7 @@ void USARTx_IRQHandler(void) {
   if ( __HAL_UART_GET_FLAG(&huartx, UART_FLAG_IDLE) ) { // 确实是RXNE中断触发
     __HAL_UART_CLEAR_IDLEFLAG(&huartx); // 清除IDLE标志位
     __HAL_UART_CLEAR_FLAG(&huartx, UART_FLAG_IDLE); // 清除IDLE标志位
-    UartIdleDmaRx_FuncCalled_InIdleInterrupt(&ttUIDR); // 在空闲中断调用这个函数
+    UartDmaIdleRx_FuncCalled_InIdleInterrupt(&ttUIDR); // 在空闲中断调用这个函数
     return;
   }
   /* USER CODE END USARTx_IRQn 0 */
@@ -55,13 +55,13 @@ void USARTx_IRQHandler(void) {
 }
 
 int main(void) {
-  HUartIdleDmaRx_Init(&ttUIDR, &huartx, &hdma_usartx_rx); // 初始化
+  UartDmaIdleRx_Init(&ttUIDR, &huartx, &hdma_usartx_rx); // 初始化
 
   while (1) {
-    if ( UartIdleDmaRx_GetRecvFlag(&ttUIDR) ) { // 获取是否接收数据标志位
+    if ( UartDmaIdleRx_GetRecvFlag(&ttUIDR) ) { // 获取是否接收数据标志位
       printf( "rx_count: %d\r\nrx_data: %s",
-        UartIdleDmaRx_GetRecvLen(&ttUIDR), // 获取接收的字节数
-        UartIdleDmaRx_GetRecvBuf(&ttUIDR) // 获取接收的字节数组
+        UartDmaIdleRx_GetRecvLen(&ttUIDR), // 获取接收的字节数
+        UartDmaIdleRx_GetRecvBuf(&ttUIDR) // 获取接收的字节数组
       ); // 因为在接收完成后，补了个结束符'\0'，所以可以直接打印字符串
       printf("\r\n");
     }

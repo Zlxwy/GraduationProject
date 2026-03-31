@@ -22,7 +22,7 @@
   </DaveTm>
 
   <Target>
-    <TargetName>Test-UartIdleDmaRx</TargetName>
+    <TargetName>Test-UartDmaIdleRx</TargetName>
     <ToolsetNumber>0x4</ToolsetNumber>
     <ToolsetName>ARM-ADS</ToolsetName>
     <TargetOption>
@@ -183,7 +183,7 @@
 
   <Group>
     <GroupName>Application/MDK-ARM</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -203,7 +203,7 @@
 
   <Group>
     <GroupName>Application/User/Core</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -459,7 +459,7 @@
 
   <Group>
     <GroupName>Drivers/CMSIS</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -479,7 +479,7 @@
 
   <Group>
     <GroupName>MyDrivers</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -490,8 +490,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\MyDrivers\UartIdleDmaRx.c</PathWithFileName>
-      <FilenameWithoutPath>UartIdleDmaRx.c</FilenameWithoutPath>
+      <PathWithFileName>..\MyDrivers\UartDmaIdleRx.c</PathWithFileName>
+      <FilenameWithoutPath>UartDmaIdleRx.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -502,8 +502,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\MyDrivers\UartIdleDmaRx.h</PathWithFileName>
-      <FilenameWithoutPath>UartIdleDmaRx.h</FilenameWithoutPath>
+      <PathWithFileName>..\MyDrivers\UartDmaIdleRx.h</PathWithFileName>
+      <FilenameWithoutPath>UartDmaIdleRx.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

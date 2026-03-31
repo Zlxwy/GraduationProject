@@ -58,7 +58,7 @@
 extern DMA_HandleTypeDef hdma_usart3_rx;
 extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN EV */
-extern UartIdleDmaRx_t ttUIDR; // 串口空闲中断DMA接收的结构体实例
+extern UartDmaIdleRx_t ttUIDR; // 串口空闲中断DMA接收的结构体实例
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -222,7 +222,7 @@ void USART3_IRQHandler(void)
   if ( __HAL_UART_GET_FLAG(&huart3, UART_FLAG_IDLE) ) { // 确实是RXNE中断触发
     __HAL_UART_CLEAR_IDLEFLAG(&huart3); // 清除IDLE标志位
     __HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_IDLE); // 清除IDLE标志位
-    UartIdleDmaRx_FuncCalled_InIdleInterrupt(&ttUIDR);
+    UartDmaIdleRx_FuncCalled_InIdleInterrupt(&ttUIDR); // 在空闲中断调用这个函数
     return;
   }
   /* USER CODE END USART3_IRQn 0 */

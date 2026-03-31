@@ -1,8 +1,8 @@
-#include "UartIdleDmaRx.h"
+#include "UartDmaIdleRx.h"
 
-// 在使用之前，必须按照 UartIdleDmaRx.md 中配置好 UART 和 DMA_RX
+// 在使用之前，必须按照 UartDmaIdleRx.md 中配置好 UART 和 DMA_RX
 
-void UartIdleDmaRx_Init(UartIdleDmaRx_t* cThis,
+void UartDmaIdleRx_Init(UartDmaIdleRx_t* cThis,
                          UART_HandleTypeDef *huart,
                          DMA_HandleTypeDef *hdmarx) {
   cThis->huart = huart;
@@ -19,7 +19,7 @@ void UartIdleDmaRx_Init(UartIdleDmaRx_t* cThis,
 
 
 
-void UartIdleDmaRx_FuncCalled_InIdleInterrupt(UartIdleDmaRx_t* cThis) {
+void UartDmaIdleRx_FuncCalled_InIdleInterrupt(UartDmaIdleRx_t* cThis) {
   cThis->RecvLen = UART_RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(cThis->hdmarx); // 接收到的字节数
   cThis->RecvBuf[cThis->RecvLen] = '\0'; // 补一个结束符
   cThis->RecvFlag = true; // 挂起接收数据标志位
@@ -33,7 +33,7 @@ void UartIdleDmaRx_FuncCalled_InIdleInterrupt(UartIdleDmaRx_t* cThis) {
 
 
 
-bool UartIdleDmaRx_GetRecvFlag(UartIdleDmaRx_t* cThis) {
+bool UartDmaIdleRx_GetRecvFlag(UartDmaIdleRx_t* cThis) {
   if (cThis->RecvFlag) {
     cThis->RecvFlag = false;
     return true;
@@ -47,10 +47,10 @@ bool UartIdleDmaRx_GetRecvFlag(UartIdleDmaRx_t* cThis) {
   // return ret;
 }
 
-uint8_t* UartIdleDmaRx_GetRecvBuf(UartIdleDmaRx_t* cThis) {
+uint8_t* UartDmaIdleRx_GetRecvBuf(UartDmaIdleRx_t* cThis) {
   return cThis->RecvBuf;
 }
 
-size_t UartIdleDmaRx_GetRecvLen(UartIdleDmaRx_t* cThis) {
+size_t UartDmaIdleRx_GetRecvLen(UartDmaIdleRx_t* cThis) {
   return cThis->RecvLen;
 }

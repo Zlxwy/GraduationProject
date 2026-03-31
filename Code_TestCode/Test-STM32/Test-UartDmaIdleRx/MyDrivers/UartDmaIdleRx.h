@@ -15,16 +15,16 @@ typedef struct {
   uint8_t RecvBuf[UART_RX_BUF_SIZE]; // 接收缓冲区
   size_t RecvLen; // 接收数据长度
   bool RecvFlag; // 接收数据标志位
-} UartIdleDmaRx_t;
+} UartDmaIdleRx_t;
 
-void UartIdleDmaRx_Init(UartIdleDmaRx_t* cThis,
+void UartDmaIdleRx_Init(UartDmaIdleRx_t* cThis,
                         UART_HandleTypeDef *huart,
                         DMA_HandleTypeDef *hdmarx);
-void UartIdleDmaRx_FuncCalled_InIdleInterrupt(UartIdleDmaRx_t* cThis);
+void UartDmaIdleRx_FuncCalled_InIdleInterrupt(UartDmaIdleRx_t* cThis);
 
-bool UartIdleDmaRx_GetRecvFlag(UartIdleDmaRx_t* cThis);
-uint8_t* UartIdleDmaRx_GetRecvBuf(UartIdleDmaRx_t* cThis);
-size_t UartIdleDmaRx_GetRecvLen(UartIdleDmaRx_t* cThis);
+bool UartDmaIdleRx_GetRecvFlag(UartDmaIdleRx_t* cThis);
+uint8_t* UartDmaIdleRx_GetRecvBuf(UartDmaIdleRx_t* cThis);
+size_t UartDmaIdleRx_GetRecvLen(UartDmaIdleRx_t* cThis);
 
 
 
