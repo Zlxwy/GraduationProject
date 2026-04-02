@@ -18,6 +18,8 @@
         - Advanced Parameters
           * Data Direction: <u>Receive and Transmit</u>
           * Over Sampling: <u>16 Samples</u>
+      - NVIC Settings
+        * USARTx global interrupt: <u>Enabled</u>
       - DMA Settings
         * DMA Request: <u>USARTx_TX</u>
         * Stream: <u>DMAx Stream x</u>
@@ -44,12 +46,12 @@ UartDmaQueueTx_t ttUQDT;
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
   if (huart->Instance == USARTx) {
-    UartDmaQueueTx_FuncCalled_InCpltInterrupt(&ttUQDT);
+    UartDmaQueueTx_FuncCalled_InTxCpltCallback(&ttUQDT);
   }
 }
 
 int main(void) {
-  UartDmaQueueTx_Init(&ttUQDT, &huartx, &hdma_usartx_tx); // 初始化
+  UartDmaQueueTx_Init(&ttUQDT, &huartx, &hdma_usartx_tx, HAL_Delay); // 初始化
   UartDmaQueueTx_Printf(&ttUQDT, "Hello, World!\n");
   UartDmaQueueTx_Printf(&ttUQDT, "Hello, STM32!\n");
   UartDmaQueueTx_Printf(&ttUQDT, "Hello, F407ZGT6!\n");

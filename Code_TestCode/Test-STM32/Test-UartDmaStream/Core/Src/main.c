@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "dma.h"
 #include "usart.h"
 #include "gpio.h"
@@ -50,20 +51,14 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern UART_HandleTypeDef huart3;
-extern DMA_HandleTypeDef hdma_usart3_tx;
-UartDmaQueueTx_t ttUQDT;
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
-  if (huart->Instance == USART3) {
-    UartDmaQueueTx_FuncCalled_InTxCpltCallback(&ttUQDT);
-  }
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -98,25 +93,22 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  UartDmaQueueTx_Init(&ttUQDT, &huart3, &hdma_usart3_tx, HAL_Delay); // 初始化
-  UartDmaQueueTx_Printf(&ttUQDT, "Hello, World!\n");
-  UartDmaQueueTx_Printf(&ttUQDT, "Hello, STM32!\n");
-  UartDmaQueueTx_Printf(&ttUQDT, "Hello, F407ZGT6!\n");
-  UartDmaQueueTx_Printf(&ttUQDT, "\r\n");
+
   /* USER CODE END 2 */
+
+  /* Init scheduler */
+  osKernelInitialize();  /* Call init function for freertos objects (in cmsis_os2.c) */
+  MX_FREERTOS_Init();
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint64_t cnt = 0;
-  uint32_t a = 0;
   while (1)
   {
-    UartDmaQueueTx_FuncCalled_InInfiniteLoop(&ttUQDT);
-
-    if (a++ >= 1) {
-      UartDmaQueueTx_Printf(&ttUQDT, "[%010llu] Hello, World!\n", cnt++);
-      a = 0;
-    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -172,6 +164,28 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM6 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM6)
+  {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

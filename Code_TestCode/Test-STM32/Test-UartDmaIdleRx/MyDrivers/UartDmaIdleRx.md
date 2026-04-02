@@ -18,6 +18,8 @@
         - Advanced Parameters
           * Data Direction: <u>Receive and Transmit</u>
           * Over Sampling: <u>16 Samples</u>
+      - NVIC Settings
+        * USARTx global interrupt: <u>Enabled</u>
       - DMA Settings
         * DMA Request: <u>USARTx_RX</u>
         * Stream: <u>DMAx Stream x</u>
