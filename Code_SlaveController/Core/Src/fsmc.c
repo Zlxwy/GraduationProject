@@ -125,18 +125,18 @@ static void HAL_FSMC_MspInit(void){
   PG12   ------> FSMC_NE4
   */
   /* GPIO_InitStruct */
-  GPIO_InitStruct.Pin = GPIO_PIN_12;
+  GPIO_InitStruct.Pin = LCD_FSMC_A6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FSMC;
 
-  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+  HAL_GPIO_Init(LCD_FSMC_A6_GPIO_Port, &GPIO_InitStruct);
 
   /* GPIO_InitStruct */
-  GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10
-                          |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14
-                          |GPIO_PIN_15;
+  GPIO_InitStruct.Pin = LCD_FSMC_D4_Pin|LCD_FSMC_D5_Pin|LCD_FSMC_D6_Pin|LCD_FSMC_D7_Pin
+                          |LCD_FSMC_D8_Pin|LCD_FSMC_D9_Pin|LCD_FSMC_D10_Pin|LCD_FSMC_D11_Pin
+                          |LCD_FSMC_D12_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -145,9 +145,9 @@ static void HAL_FSMC_MspInit(void){
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /* GPIO_InitStruct */
-  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_14
-                          |GPIO_PIN_15|GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4
-                          |GPIO_PIN_5;
+  GPIO_InitStruct.Pin = LCD_FSMC_D13_Pin|LCD_FSMC_D14_Pin|LCD_FSMC_D15_Pin|LCD_FSMC_D0_Pin
+                          |LCD_FSMC_D1_Pin|LCD_FSMC_D2_Pin|LCD_FSMC_D3_Pin|LCD_FSMC_NOE_Pin
+                          |LCD_FSMC_NWE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -156,13 +156,13 @@ static void HAL_FSMC_MspInit(void){
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* GPIO_InitStruct */
-  GPIO_InitStruct.Pin = GPIO_PIN_12;
+  GPIO_InitStruct.Pin = LCD_FSMC_NE4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FSMC;
 
-  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+  HAL_GPIO_Init(LCD_FSMC_NE4_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN FSMC_MspInit 1 */
 
@@ -215,17 +215,17 @@ static void HAL_FSMC_MspDeInit(void){
   PG12   ------> FSMC_NE4
   */
 
-  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_12);
+  HAL_GPIO_DeInit(LCD_FSMC_A6_GPIO_Port, LCD_FSMC_A6_Pin);
 
-  HAL_GPIO_DeInit(GPIOE, GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10
-                          |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14
-                          |GPIO_PIN_15);
+  HAL_GPIO_DeInit(GPIOE, LCD_FSMC_D4_Pin|LCD_FSMC_D5_Pin|LCD_FSMC_D6_Pin|LCD_FSMC_D7_Pin
+                          |LCD_FSMC_D8_Pin|LCD_FSMC_D9_Pin|LCD_FSMC_D10_Pin|LCD_FSMC_D11_Pin
+                          |LCD_FSMC_D12_Pin);
 
-  HAL_GPIO_DeInit(GPIOD, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_14
-                          |GPIO_PIN_15|GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4
-                          |GPIO_PIN_5);
+  HAL_GPIO_DeInit(GPIOD, LCD_FSMC_D13_Pin|LCD_FSMC_D14_Pin|LCD_FSMC_D15_Pin|LCD_FSMC_D0_Pin
+                          |LCD_FSMC_D1_Pin|LCD_FSMC_D2_Pin|LCD_FSMC_D3_Pin|LCD_FSMC_NOE_Pin
+                          |LCD_FSMC_NWE_Pin);
 
-  HAL_GPIO_DeInit(GPIOG, GPIO_PIN_12);
+  HAL_GPIO_DeInit(LCD_FSMC_NE4_GPIO_Port, LCD_FSMC_NE4_Pin);
 
   /* USER CODE BEGIN FSMC_MspDeInit 1 */
 

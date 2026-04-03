@@ -11,6 +11,23 @@
         * Memory Type: <u>LCD Interface</u>
         * LCD Register Select: <u>A6</u>
         * Data: <u>16 bits</u>
+    - Configuration
+      - NOR/PSRAM 4
+        - NOR/PSRAM control
+          * Memory type: <u>LCD Interface</u>
+          * Bank: <u>Bank 1 NOR/PSRAM 4</u>
+          * Write operation: <u>Enabled</u>
+          * Extended mode: <u>Enabled</u>
+        - NOR/PSRAM timing
+          * Address setup time in HCLK clock cycles: <u>15</u>
+          * Data setup time in HCLK clock cycles: <u>60</u>
+          * Bus turn around time in HCLK clock cycles: <u>0</u>
+          * Access mode: <u>A</u>
+        - NOR/PSRAM timing for write accesses
+          * Extended address setup time: <u>9</u>
+          * Extended data setup time: <u>8</u>
+          * Extended bus turn around time: <u>0</u>
+          * Extended access mode: <u>A</u>
 
 ## 代码使用示例
 ```c

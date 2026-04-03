@@ -25,7 +25,7 @@
       - NVIC Settings
         | NVIC Interrupt Table | Enabled | Preemption Priority | Sub Priority |
         | --- | --- | --- | --- |
-        | TIM update global interrupt | &#x2611; | x | x |
+        | TIM update global interrupt | &#x2611; | x（给个比较低的） | x |
       - GPIO Settings
         GPIO Pull-up/Pull-down: <u>Pull-down</u>
         Maximum output speed: <u>Very High</u>

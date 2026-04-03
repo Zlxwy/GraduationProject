@@ -33,8 +33,8 @@ extern uint16_t  BACK_COLOR; //背景颜色.默认为白色
 //LCD地址结构体
 typedef struct
 {
-  vu16 LCD_REG;
-  vu16 LCD_RAM;
+  volatile uint16_t LCD_REG;
+  volatile uint16_t LCD_RAM;
 }LCD_TypeDef;
 
 

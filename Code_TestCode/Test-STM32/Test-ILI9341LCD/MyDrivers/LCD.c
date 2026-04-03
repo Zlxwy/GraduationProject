@@ -47,7 +47,7 @@ void LCD_WriteReg(uint16_t index,uint16_t data)
 uint16_t LCD_ReadReg(uint16_t index)
 {                       
   LCD_WriteCommand(index);
-  delay_us(5);
+  // HAL_Delay(1);
   return LCD_ReadData();
 }
 
@@ -168,7 +168,7 @@ void LCD_Init(void)
   LCD_WriteData(0x00);
   LCD_WriteData(0xef);   
   LCD_WriteCommand(0x11);//Exit Sleep
-  delay_ms(120);
+  HAL_Delay(120);
   LCD_WriteCommand(0x29);//display on
   
   LCD_SetDisplayDirection(0);//默认为竖屏
@@ -644,6 +644,7 @@ void LCD_CNCHAR16(uint16_t x,uint16_t y,char *cn)
   for(i=0;i<CNnum;i++)
     if(CNchar16x16[i].Index[0]==cn[0])
       if(CNchar16x16[i].Index[1]==cn[1])
+        if(CNchar16x16[i].Index[2]==cn[2])
         break;
   CNnum=i;
   for(i=0;i<CharNum;i++)
@@ -680,6 +681,7 @@ void LCD_CNCHAR24(uint16_t x,uint16_t y,char *cn)
   for(i=0;i<CNnum;i++)
     if(CNchar24x24[i].Index[0]==cn[0])
       if(CNchar24x24[i].Index[1]==cn[1])
+        if(CNchar24x24[i].Index[2]==cn[2])
         break;
   CNnum=i;
   for(i=0;i<CharNum;i++)
@@ -716,6 +718,7 @@ void LCD_CNCHAR40(uint16_t x,uint16_t y,char *cn)
   for(i=0;i<CNnum;i++)
     if(CNchar40x40[i].Index[0]==cn[0])
       if(CNchar40x40[i].Index[1]==cn[1])
+        if(CNchar40x40[i].Index[2]==cn[2])
         break;
   CNnum=i;
   for(i=0;i<CharNum;i++)
@@ -747,7 +750,7 @@ void LCD_CNSTRING16(uint16_t x,uint16_t y,char *cn)
   {
     LCD_CNCHAR16(x,y,cn);
     x+=16;
-    cn+=2;
+    cn+=3;
   }
 }
 
@@ -762,7 +765,7 @@ void LCD_CNSTRING24(uint16_t x,uint16_t y,char *cn)
   {
     LCD_CNCHAR24(x,y,cn);
     x+=24;
-    cn+=2;
+    cn+=3;
   }
 }
 
@@ -777,7 +780,7 @@ void LCD_CNSTRING40(uint16_t x,uint16_t y,char *cn)
   {
     LCD_CNCHAR40(x,y,cn);
     x+=40;
-    cn+=2;
+    cn+=3;
   }
 }
 
