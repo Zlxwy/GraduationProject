@@ -28,9 +28,9 @@ void MotorActionTaskFunc(void *argument) {
         while (StepperMotor_GetRunState(&gStepperMotorLift) == StepperMotor_RunState_MoveSteps);
       } // if (msg.RequestType == MotorActionRequestType_BasicMove)
 
-      else if (msg.RequestType == MotorActionRequestType_BasicMove) { // 平面行走
+      else if (msg.RequestType == MotorActionRequestType_MoveOnPlane) { // 平面行走
         ;
-      } // else if (msg.RequestType == MotorActionRequestType_BasicMove)
+      } // else if (msg.RequestType == MotorActionRequestType_MoveOnPlane)
 
       else if (msg.RequestType == MotorActionRequestType_VerticalAxis) { // 竖轴位置
         ;
