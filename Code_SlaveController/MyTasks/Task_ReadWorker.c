@@ -137,7 +137,7 @@ void ReadWorkerTaskFunc(void *argument) {
       // uint32_t FrameLen = UartDmaStream_GetFrameSize(&gMainStream, gFrameBuffer); // 获取帧长度（包括有效数据部分）
       // uint8_t PrintHexStr[128];
       // for (size_t i=0; i<FrameLen; i++) sprintf((char*)&PrintHexStr[i*3], "%02X ", gFrameBuffer[i]);
-      // UartDmaStream_Printf(&gMainStream, "CRC Check Sum Error: %s\n", PrintHexStr);
+      // UartDmaStream_Printf(&gMainStream, "CRC Check Sum Error: %s\n", PrintHexStr); // 打印校验码错误的帧数据
     } // else if (ReadState == UartDmaStream_ReadState_CrcErr)
 
     else if (ReadState == UartDmaStream_ReadState_Timeout) { // 读了一部分符合格式的数据，但中途超时退出了
