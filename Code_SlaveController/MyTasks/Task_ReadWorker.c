@@ -89,24 +89,6 @@ void ReadWorkerTaskFunc(void *argument) {
       
       if (FrameType == UartDmaStream_FrameType_Req) { // 是请求帧
         if (CommandType == COMMAND_TYPE_MOTOR_BASIC_MOVE) {
-          // StepperMotor_MoveSteps( // 步进电机移动指定步数函数
-          //   &gStepperMotorShoulder, // 肩关节步进电机
-          //   BytesToInt64_BigEndian(PayloadData+4), // 行走步数
-          //   BytesToUint32_BigEndian(PayloadData+12) // 行走速度
-          // ); // Object, steps, speed
-          // StepperMotor_MoveSteps( // 步进电机移动指定步数函数
-          //   &gStepperMotorElbow, // 肘关节步进电机
-          //   BytesToInt64_BigEndian(PayloadData+4), // 行走步数
-          //   BytesToUint32_BigEndian(PayloadData+12) // 行走速度
-          // ); // Object, steps, speed
-          // StepperMotor_MoveSteps( // 步进电机移动指定步数函数
-          //   &gStepperMotorLift, // 竖轴步进电机
-          //   BytesToInt64_BigEndian(PayloadData+4), // 行走步数
-          //   BytesToUint32_BigEndian(PayloadData+12) // 行走速度
-          // ); // Object, steps, speed
-          // while (StepperMotor_GetRunState(&gStepperMotorShoulder) == StepperMotor_RunState_MoveSteps);
-          // while (StepperMotor_GetRunState(&gStepperMotorElbow) == StepperMotor_RunState_MoveSteps);
-          // while (StepperMotor_GetRunState(&gStepperMotorLift) == StepperMotor_RunState_MoveSteps);
           Parse_COMMAND_TYPE_MOTOR_BASIC_MOVE(PayloadData, PayloadLen);
         } // if (CommandType == COMMAND_TYPE_MOTOR_BASIC_MOVE)
         else if (CommandType == COMMAND_TYPE_LED_BLINK) {
