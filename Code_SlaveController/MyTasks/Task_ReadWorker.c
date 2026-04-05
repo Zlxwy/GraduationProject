@@ -33,8 +33,8 @@ void ReadWorkerTaskFunc(void *argument) {
     &gStepperMotorShoulder, // 肩关节步进电机
     &htim3, // 使用TIM3定时器
     TIM_CHANNEL_1, // 使用通道1输出PWM
-    84000000, // 内部时钟为168MHz
-    14-1, // 进行预分频，14分频，得到168MHz/14=12MHz的CNT计数频率
+    84000000, // 内部时钟为84MHz
+    7-1, // 进行预分频，7分频，得到84MHz/7=12MHz的CNT计数频率
     4000-1, // 设置自动重装载值为4000，得到12MHz/4000=3kHz的PWM频率
     50, // 高电平占空比50%
     StepperMotorShoulder_Dir_GPIO_Port, // 方向引脚端口
@@ -144,8 +144,8 @@ void Parse_COMMAND_TYPE_MOTOR_BASIC_MOVE(uint8_t *PayloadData, uint32_t PayloadL
   msg.Steps = BytesToInt64_BigEndian(PayloadData+4);
   msg.Speed = BytesToUint32_BigEndian(PayloadData+12);
   if ( osMessageQueuePut(gMsgQueueMotorAction, &msg, 0U, 0) == osOK ) {
-    UartDmaStream_Printf(&gMainStream, "[COMMAND_TYPE_MOTOR_BASIC_MOVE] Parse Success!!!\n");
+    UartDmaStream_Printf(&gMainStream, "[COMMAND_TYPE_MOTOR_BASIC_MOVE] Parse Success!!!\n\n");
   } else {
-    UartDmaStream_Printf(&gMainStream, "[COMMAND_TYPE_MOTOR_BASIC_MOVE] Parse Failed~~~\n");
+    UartDmaStream_Printf(&gMainStream, "[COMMAND_TYPE_MOTOR_BASIC_MOVE] Parse Failed~~~\n\n");
   }
 }
