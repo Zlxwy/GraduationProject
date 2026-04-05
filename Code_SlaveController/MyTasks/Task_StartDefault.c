@@ -22,6 +22,6 @@ void StartDefaultTask(void *argument) {
     // uint8_t send_array[] = {0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xC8,0x00,0x00,0x02,0x9A};
     // UartDmaStream_WriteFrame(&gMainStream,UartDmaStream_FrameHead2_Req,send_array,sizeof(send_array));
 
-    osDelay(osWaitForever);
+    osDelay(2000);
   }
 }
