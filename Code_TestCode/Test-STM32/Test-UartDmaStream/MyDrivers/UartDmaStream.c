@@ -34,10 +34,6 @@ void UartDmaStream_Init(UartDmaStream_t *cThis,
 
 
 void UartDmaStream_FuncCalled_InTxCpltCallback(UartDmaStream_t* cThis) {
-#ifdef SEND_BYTES_USE_RTOS_MUTEX // 如果是FreeRTOS环境，就会有这个定义
-  osMutexAcquire(cThis->SendBytesMutex, osWaitForever); // 获取互斥锁，阻塞等待直到获取到
-#endif
-
   cThis->TxDataQueue[cThis->HandleQueueIndex].StartIndex = 0; // 清空已发送的队列
   cThis->TxDataQueue[cThis->HandleQueueIndex].DataLength = 0; // 清空已发送的队列
 
@@ -59,10 +55,6 @@ void UartDmaStream_FuncCalled_InInfiniteLoop(UartDmaStream_t* cThis) {
   }
   // HAL_Delay(5);
   cThis->DelayMS(5); // 这里加一点延时，不然的话写入总是会出现缺失的问题
-
-#ifdef SEND_BYTES_USE_RTOS_MUTEX // 如果是FreeRTOS环境，就会有这个定义
-  osMutexRelease(cThis->SendBytesMutex); // 释放互斥锁
-#endif
 }
 
 
@@ -71,6 +63,10 @@ void UartDmaStream_FuncCalled_InInfiniteLoop(UartDmaStream_t* cThis) {
 
 // SendBytesLen不要超过UART_DMA_STREAM_TX_BUF_SIZE
 void UartDmaStream_SendBytes(UartDmaStream_t *cThis, const uint8_t *SendBytes, size_t SendBytesLen) {
+#ifdef SEND_BYTES_USE_RTOS_MUTEX // 如果是FreeRTOS环境，就会有这个定义
+  osMutexAcquire(cThis->SendBytesMutex, osWaitForever); // 获取互斥锁，阻塞等待直到获取到
+#endif
+
   uint32_t StartIndexMark = cThis->TxDataQueue[cThis->EnterQueueIndex].StartIndex; // 记录当前队列的传输缓冲区起始索引
   uint32_t DataLengthMark; // 这个用来后面来记录数据长度
 
@@ -129,8 +125,9 @@ void UartDmaStream_SendBytes(UartDmaStream_t *cThis, const uint8_t *SendBytes, s
     cThis->TxDataQueue[cThis->EnterQueueIndex].StartIndex = StartIndexMark + DataLengthMark;
     // 这个不会超出范围，因为已经分两次复制过了
   }
-  else return;
-
+#ifdef SEND_BYTES_USE_RTOS_MUTEX // 如果是FreeRTOS环境，就会有这个定义
+    osMutexRelease(cThis->SendBytesMutex); // 释放互斥锁
+#endif
 }
 
 void UartDmaStream_SendString(UartDmaStream_t *cThis, const char *SendString) {
