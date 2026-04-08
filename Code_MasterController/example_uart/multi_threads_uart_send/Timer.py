@@ -52,10 +52,11 @@ class Timer:
   """
   def _run(self):
     while self.running:
-      if self.running: # 再次检查，防止在sleep期间被stop
-        # 创建一个新线程来执行任务，然后立即分离(detach)
-        # Python中没有detach，因此启动一个daemon线程让它自己结束
-        task_thread = threading.Thread(target=self.task, daemon=True)
-        task_thread.start()
+      # if self.running: # 再次检查，防止在sleep期间被stop
+      #   # 创建一个新线程来执行任务，然后立即分离(detach)
+      #   # Python中没有detach，因此启动一个daemon线程让它自己结束
+      #   task_thread = threading.Thread(target=self.task, daemon=True)
+      #   task_thread.start()
+      # time.sleep(self.interval_s)
       time.sleep(self.interval_s)
-
+      if self.running: self.task()
