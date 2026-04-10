@@ -25,7 +25,7 @@ aa/
 ## 环境准备
 
 ```bash
-pip install opencv-python numpy PyQt5 torch torchvision matplotlib
+pip install opencv-python numpy PyQt5 matplotlib
 # 如果是带有显卡的电脑，先使用命令 nvidia-smi 查看CUDA版本，然后安装对应版本的PyTorch
 pip install torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 --index-url https://download.pytorch.org/whl/cuxxx
 ```
