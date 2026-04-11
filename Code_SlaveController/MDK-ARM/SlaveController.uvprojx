@@ -1027,6 +1027,11 @@
           <GroupName>MyTasks</GroupName>
           <Files>
             <File>
+              <FileName>CallbackManager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MyTasks\CallbackManager.c</FilePath>
+            </File>
+            <File>
               <FileName>Task_All.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\MyTasks\Task_All.h</FilePath>
@@ -1050,6 +1055,11 @@
               <FileName>Task_MotorAction.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\MyTasks\Task_MotorAction.c</FilePath>
+            </File>
+            <File>
+              <FileName>Task_KeyScanRead.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MyTasks\Task_KeyScanRead.c</FilePath>
             </File>
           </Files>
         </Group>

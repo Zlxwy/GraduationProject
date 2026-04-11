@@ -134,13 +134,26 @@ void UartDmaStream_SendString(UartDmaStream_t *cThis, const char *SendString) {
   UartDmaStream_SendBytes(cThis, (const uint8_t *)SendString, strlen(SendString));
 }
 
-void UartDmaStream_Printf(UartDmaStream_t *cThis, const char *format, ...) {
+void UartDmaStream_DebugPrintf(UartDmaStream_t *cThis, const char *format, ...) {
+#ifdef ENABLE_DEBUG_PRINT
   char SendBuf[256];
   va_list args;
   va_start(args, format);
   vsnprintf(SendBuf, sizeof(SendBuf), format, args);
   va_end(args);
   UartDmaStream_SendString(cThis, SendBuf);
+#endif
+}
+
+void UartDmaStream_LogPrintf(UartDmaStream_t *cThis, const char *format, ...) {
+#ifdef ENABLE_LOG_PRINT
+  char SendBuf[256];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(SendBuf, sizeof(SendBuf), format, args);
+  va_end(args);
+  UartDmaStream_SendString(cThis, SendBuf);
+#endif
 }
 
 
@@ -397,14 +410,16 @@ uint32_t BytesToUint32_BigEndian(uint8_t *HandleBytes) {
 }
 
 uint64_t BytesToUint64_BigEndian(uint8_t *HandleBytes) {
-  return ( (HandleBytes[0] << 56) // May Trigger Warning But Runs Normally
-         | (HandleBytes[1] << 48) // May Trigger Warning But Runs Normally
-         | (HandleBytes[2] << 40) // May Trigger Warning But Runs Normally
-         | (HandleBytes[3] << 32) // May Trigger Warning But Runs Normally
-         | (HandleBytes[4] << 24)
-         | (HandleBytes[5] << 16)
-         | (HandleBytes[6] << 8)
-         | (HandleBytes[7] << 0) );
+    uint64_t val = 0;
+    val |= (uint64_t)HandleBytes[0] << 56;
+    val |= (uint64_t)HandleBytes[1] << 48;
+    val |= (uint64_t)HandleBytes[2] << 40;
+    val |= (uint64_t)HandleBytes[3] << 32;
+    val |= (uint64_t)HandleBytes[4] << 24;
+    val |= (uint64_t)HandleBytes[5] << 16;
+    val |= (uint64_t)HandleBytes[6] << 8;
+    val |= (uint64_t)HandleBytes[7] << 0;
+    return val;
 }
 
 int16_t BytesToInt16_BigEndian(uint8_t *HandleBytes) {
@@ -420,14 +435,26 @@ int32_t BytesToInt32_BigEndian(uint8_t *HandleBytes) {
 }
 
 int64_t BytesToInt64_BigEndian(uint8_t *HandleBytes) {
-  return ( (HandleBytes[0] << 56) // May Trigger Warning But Runs Normally
-         | (HandleBytes[1] << 48) // May Trigger Warning But Runs Normally
-         | (HandleBytes[2] << 40) // May Trigger Warning But Runs Normally
-         | (HandleBytes[3] << 32) // May Trigger Warning But Runs Normally
-         | (HandleBytes[4] << 24)
-         | (HandleBytes[5] << 16)
-         | (HandleBytes[6] << 8)
-         | (HandleBytes[7] << 0) );
+  int64_t val = 0;
+  val |= (int64_t)HandleBytes[0] << 56;
+  val |= (int64_t)HandleBytes[1] << 48;
+  val |= (int64_t)HandleBytes[2] << 40;
+  val |= (int64_t)HandleBytes[3] << 32;
+  val |= (int64_t)HandleBytes[4] << 24;
+  val |= (int64_t)HandleBytes[5] << 16;
+  val |= (int64_t)HandleBytes[6] << 8;
+  val |= (int64_t)HandleBytes[7] << 0;
+  return val;
+}
+
+float BytesToFloat32_BigEndian(uint8_t *HandleBytes) {
+  float val = 0.0f;
+  uint8_t *p = (uint8_t *)&val;
+  p[0] = HandleBytes[3];
+  p[1] = HandleBytes[2];
+  p[2] = HandleBytes[1];
+  p[3] = HandleBytes[0];
+  return val;
 }
 
 

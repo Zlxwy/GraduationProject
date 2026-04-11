@@ -19,6 +19,8 @@
   #include "cmsis_os2.h" // 包含互斥锁相关的头文件
   #define SEND_BYTES_USE_RTOS_MUTEX // 启用FreeRTOS互斥锁保护发送操作，避免并发访问问题
 #endif
+// #define ENABLE_DEBUG_PRINT // 启用调试打印功能
+// #define ENABLE_LOG_PRINT // 启用日志打印功能
 
 
 
@@ -122,7 +124,8 @@ void UartDmaStream_FuncCalled_InInfiniteLoop(UartDmaStream_t* cThis);
 
 void UartDmaStream_SendBytes(UartDmaStream_t *cThis, const uint8_t *SendBytes, size_t SendBytesLen);
 void UartDmaStream_SendString(UartDmaStream_t *cThis, const char *SendString);
-void UartDmaStream_Printf(UartDmaStream_t *cThis, const char *format, ...);
+void UartDmaStream_DebugPrintf(UartDmaStream_t *cThis, const char *format, ...);
+void UartDmaStream_LogPrintf(UartDmaStream_t *cThis, const char *format, ...);
 
 uint16_t UartDmaStream_CRC16Cal(const uint8_t *bytes, size_t len);
 size_t UartDmaStream_GetRecvIndex(UartDmaStream_t *cThis);
@@ -136,6 +139,7 @@ uint64_t BytesToUint64_BigEndian(uint8_t *HandleBytes);
 int16_t BytesToInt16_BigEndian(uint8_t *HandleBytes);
 int32_t BytesToInt32_BigEndian(uint8_t *HandleBytes);
 int64_t BytesToInt64_BigEndian(uint8_t *HandleBytes);
+float BytesToFloat32_BigEndian(uint8_t *HandleBytes);
 
 UartDmaStream_FrameType_e UartDmaStream_GetFrameType(UartDmaStream_t *cThis, uint8_t *RecvBuf);
 size_t UartDmaStream_GetPayloadSize(UartDmaStream_t *cThis, uint8_t *RecvBuf);

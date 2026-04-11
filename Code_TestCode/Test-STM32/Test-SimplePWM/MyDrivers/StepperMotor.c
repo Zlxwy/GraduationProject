@@ -266,10 +266,10 @@ void StepperMotor_Stop(StepperMotor_t *cThis) {
  * @brief 运行步进电机指定步数
  * @note 调用此函数后，要确保ARR和CCR已经加载好，否则输出的第一个波形会有点奇怪（占空比不是50%）
  * @param cThis 步进电机对象指针
- * @param Steps 步数，正负值对应正反转，范围int32_t
+ * @param Steps 步数，正负值对应正反转，范围int64_t
  * @param speed 速度，单位Hz，范围[SYSCLK/(PSC+1)/(65536), SYSCLK/(PSC+1)/2]
  */
-void StepperMotor_MoveSteps(StepperMotor_t *cThis, int32_t Steps, uint32_t speed) {
+void StepperMotor_MoveSteps(StepperMotor_t *cThis, int64_t Steps, uint32_t speed) {
   /*如果步数为0，直接停止电机*/
   if (Steps == 0) {
     StepperMotor_Stop(cThis);

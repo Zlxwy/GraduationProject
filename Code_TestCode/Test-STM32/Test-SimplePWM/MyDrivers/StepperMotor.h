@@ -37,8 +37,8 @@ typedef struct {
   /*方向状态*/StepperMotor_Direction_t Direction; // （实时变化）
 
   /*电机是否正在转动*/StepperMotor_RunState_t RunState; // 用于获取电机状态（实时变化）
-  /*本轮输出总脉冲数*/uint32_t TargetPulsesToOutput;
-  /*当前已输出脉冲数*/uint32_t CurrentOutputedPulses;
+  /*本轮输出总脉冲数*/uint64_t TargetPulsesToOutput;
+  /*当前已输出脉冲数*/uint64_t CurrentOutputedPulses;
 } StepperMotor_t;
 
 void StepperMotor_Init(StepperMotor_t *cThis,
@@ -62,7 +62,7 @@ void StepperMotor_ClearOutputPWM(StepperMotor_t *cThis);
 void StepperMotor_FuncCalled_InTimerInterrupt(StepperMotor_t *cThis);
 
 void StepperMotor_Stop(StepperMotor_t *cThis);
-void StepperMotor_MoveSteps(StepperMotor_t *cThis, int32_t Steps, uint32_t speed);
+void StepperMotor_MoveSteps(StepperMotor_t *cThis, int64_t Steps, uint32_t speed);
 void StepperMotor_RunContinuous(StepperMotor_t *cThis, StepperMotor_Direction_t dir, uint32_t speed);
 void StepperMotor_SetSpeed(StepperMotor_t *cThis, uint32_t Speed);
 void StepperMotor_SetSpeedWithoutCheck(StepperMotor_t *cThis, uint32_t Speed);

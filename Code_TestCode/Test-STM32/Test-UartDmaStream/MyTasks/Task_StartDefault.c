@@ -7,10 +7,10 @@ void StartDefaultTask(void *argument) {
 
   while (true) {
     // static uint32_t count = 0;
-    // UartDmaStream_Printf(&gMainStream, "[%015d] Hello, World! From StartDefaultTask!\n", count++);
+    // UartDmaStream_DebugPrintf(&gMainStream, "[%015d] Hello, World! From StartDefaultTask!\n", count++);
 
     /*打印gMainStream的一些状态成员变量*/
-    UartDmaStream_Printf(&gMainStream,
+    UartDmaStream_DebugPrintf(&gMainStream,
       "HandleQueueIndex = %d\nEnterQueueIndex = %d\nIsTxDmaIdle = %s\nRecvIndex = %d\nReadIndex = %d\n\n",
       gMainStream.HandleQueueIndex,
       gMainStream.EnterQueueIndex,

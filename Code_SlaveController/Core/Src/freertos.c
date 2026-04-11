@@ -96,6 +96,18 @@ const osThreadAttr_t MotorActionTask_attributes = {
   .stack_size = sizeof(MotorActionTaskBuffer),
   .priority = (osPriority_t) osPriorityBelowNormal,
 };
+/* Definitions for KeyScanReadTask */
+osThreadId_t KeyScanReadTaskHandle;
+uint32_t KeyScanReadTaskBuffer[ 128 ];
+osStaticThreadDef_t KeyScanReadTaskControlBlock;
+const osThreadAttr_t KeyScanReadTask_attributes = {
+  .name = "KeyScanReadTask",
+  .cb_mem = &KeyScanReadTaskControlBlock,
+  .cb_size = sizeof(KeyScanReadTaskControlBlock),
+  .stack_mem = &KeyScanReadTaskBuffer[0],
+  .stack_size = sizeof(KeyScanReadTaskBuffer),
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -106,6 +118,7 @@ void StartDefaultTask(void *argument);
 void WriteWorkerTaskFunc(void *argument);
 void ReadWorkerTaskFunc(void *argument);
 void MotorActionTaskFunc(void *argument);
+void KeyScanReadTaskFunc(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -147,6 +160,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of MotorActionTask */
   MotorActionTaskHandle = osThreadNew(MotorActionTaskFunc, NULL, &MotorActionTask_attributes);
+
+  /* creation of KeyScanReadTask */
+  KeyScanReadTaskHandle = osThreadNew(KeyScanReadTaskFunc, NULL, &KeyScanReadTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -228,6 +244,24 @@ __weak void MotorActionTaskFunc(void *argument)
     osDelay(1);
   }
   /* USER CODE END MotorActionTaskFunc */
+}
+
+/* USER CODE BEGIN Header_KeyScanReadTaskFunc */
+/**
+* @brief Function implementing the KeyScanReadTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_KeyScanReadTaskFunc */
+__weak void KeyScanReadTaskFunc(void *argument)
+{
+  /* USER CODE BEGIN KeyScanReadTaskFunc */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END KeyScanReadTaskFunc */
 }
 
 /* Private application code --------------------------------------------------*/

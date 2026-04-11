@@ -48,17 +48,20 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LCD_TOUCH_CS_GPIO_Port, LCD_TOUCH_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, LCD_TOUCH_CS_Pin|L298N_IN3_Pin|L298N_IN4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOF, LED0_Pin|LED1_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, L298N_IN1_Pin|L298N_ENA_Pin|L298N_ENB_Pin|L298N_IN2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LCD_TOUCH_SCK_Pin|LCD_TOUCH_PEN_Pin|LCD_TOUCH_MISO_Pin|LCD_BL_Pin
@@ -67,18 +70,22 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LCD_TOUCH_MOSI_GPIO_Port, LCD_TOUCH_MOSI_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : LCD_TOUCH_CS_Pin */
-  GPIO_InitStruct.Pin = LCD_TOUCH_CS_Pin;
+  /*Configure GPIO pins : LCD_TOUCH_CS_Pin L298N_IN3_Pin L298N_IN4_Pin */
+  GPIO_InitStruct.Pin = LCD_TOUCH_CS_Pin|L298N_IN3_Pin|L298N_IN4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LCD_TOUCH_CS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SIG0_Pin SIG1_Pin SIG2_Pin SIG3_Pin
-                           KEY0_Pin KEY1_Pin KEY2_Pin KEY3_Pin */
-  GPIO_InitStruct.Pin = SIG0_Pin|SIG1_Pin|SIG2_Pin|SIG3_Pin
-                          |KEY0_Pin|KEY1_Pin|KEY2_Pin|KEY3_Pin;
+  /*Configure GPIO pins : SIG0_Pin SIG1_Pin SIG2_Pin SIG3_Pin */
+  GPIO_InitStruct.Pin = SIG0_Pin|SIG1_Pin|SIG2_Pin|SIG3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : KEY0_Pin KEY1_Pin KEY2_Pin KEY3_Pin */
+  GPIO_InitStruct.Pin = KEY0_Pin|KEY1_Pin|KEY2_Pin|KEY3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
@@ -88,6 +95,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : L298N_IN1_Pin L298N_ENA_Pin L298N_ENB_Pin L298N_IN2_Pin */
+  GPIO_InitStruct.Pin = L298N_IN1_Pin|L298N_ENA_Pin|L298N_ENB_Pin|L298N_IN2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LCD_TOUCH_SCK_Pin LCD_TOUCH_PEN_Pin LCD_TOUCH_MISO_Pin LCD_BL_Pin
                            StepperMotorShoulder_Dir_Pin */
@@ -111,6 +125,19 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
 }
 

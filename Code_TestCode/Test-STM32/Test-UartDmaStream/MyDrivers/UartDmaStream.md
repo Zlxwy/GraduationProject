@@ -106,7 +106,7 @@ void UserTaskFunc_1(void *argument) {
   (void)argument;
   while (true) {
     static uint32_t cnt = 0;
-    UartDmaStream_Printf(&gMainStream, "[%010llu] Hello, World! From Task_1!\n", cnt++);
+    UartDmaStream_DebugPrintf(&gMainStream, "[%010llu] Hello, World! From Task_1!\n", cnt++);
     osDelay(200);
   }
 }
@@ -116,7 +116,7 @@ void UserTaskFunc_2(void *argument) {
   (void)argument;
   while (true) {
     static uint32_t cnt = 0;
-    UartDmaStream_Printf(&gMainStream, "[%010llu] Hello, STM32! From Task_2!\n", cnt++);
+    UartDmaStream_DebugPrintf(&gMainStream, "[%010llu] Hello, STM32! From Task_2!\n", cnt++);
     osDelay(500);
   }
 }
