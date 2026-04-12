@@ -1,4 +1,4 @@
-import GlobalVariable as gv
+import GlobalVariable as gVar
 import time
 from MyLibs.Log import Log
 from MyLibs.UartStream import *
@@ -21,9 +21,9 @@ from MyLibs.BytesConv import Float32ToBytes_BigEndian as f322b
 def RecvThreadFunc():
   gMainStream = UartStream(port="COM9", baudrate=115200) # 创建 UartStream 实例
   gMainStream.start() # 启动 UartStream 实例
-  gv.logger.PrintString("Thread_Recv Info: UartStream has started.") # 打印 UartStream 实例已启动信息
+  gVar.logger.PrintString("Thread_Recv Info: UartStream has started.") # 打印 UartStream 实例已启动信息
 
-  while not gv.exit_flag:
+  while not gVar.exit_flag:
     ReadFrameBuffer, ReadState = gMainStream.ReadFrame(timeout=1000) # 读取数据帧
     if ReadState == UartStream_ReadState.Successful:
       FrameType = ReadFrameBuffer[1]
@@ -38,20 +38,20 @@ def RecvThreadFunc():
         pass
 
       elif FrameType == UartStream_FrameHead.FrameHead2_Evt: # 接收到的是事件帧
-        if CommandType == gv.COMMAND_TYPE_KEY_CLICK:
+        if CommandType == gVar.COMMAND_TYPE_KEY_CLICK:
           Parse_COMMAND_TYPE_KEY_CLICK(PayloadData, PayloadLen)
         pass
 
       else: # 其他帧类型
-        gv.logger.PrintString("Thread_Recv Info: Unknown Frame Type.")
+        gVar.logger.PrintString("Thread_Recv Info: Unknown Frame Type.")
         pass
       
     else:
-      gv.logger.PrintString("Thread_Recv Info: Receive Timeout~~~")
+      gVar.logger.PrintString("Thread_Recv Info: Receive Timeout~~~")
 
   gMainStream.stop() # 停止 UartStream 实例
-  gv.logger.PrintString("Thread_Recv Info: UartStream has been stopped.") # 打印 UartStream 实例已停止信息
-  gv.logger.PrintString("Thread_Recv Info: Exit.") # 打印 Thread_Recv 已退出信息
+  gVar.logger.PrintString("Thread_Recv Info: UartStream has been stopped.") # 打印 UartStream 实例已停止信息
+  gVar.logger.PrintString("Thread_Recv Info: Exit.") # 打印 Thread_Recv 已退出信息
 
 
 
@@ -65,18 +65,18 @@ def Parse_COMMAND_TYPE_KEY_CLICK(PayloadData: bytes, PayloadLen: int):
   if KeyMotion == 0x00: # 只处理按下事件
     match KeyIndex:
       case 0x0000:
-        gv.draw_table_flag = not gv.draw_table_flag
-        gv.logger.PrintString("Key 0 Pressed.")
+        gVar.draw_table_flag = not gVar.draw_table_flag
+        gVar.logger.PrintString("Key 0 Pressed.")
       case 0x0001:
-        gv.draw_table_flag = not gv.draw_table_flag
-        gv.logger.PrintString("Key 1 Pressed.")
+        gVar.draw_table_flag = not gVar.draw_table_flag
+        gVar.logger.PrintString("Key 1 Pressed.")
       case 0x0002:
-        gv.draw_table_flag = not gv.draw_table_flag
-        gv.logger.PrintString("Key 2 Pressed.")
+        gVar.draw_table_flag = not gVar.draw_table_flag
+        gVar.logger.PrintString("Key 2 Pressed.")
       case 0x0003:
-        gv.draw_table_flag = not gv.draw_table_flag
-        gv.logger.PrintString("Key 3 Pressed.")
+        gVar.draw_table_flag = not gVar.draw_table_flag
+        gVar.logger.PrintString("Key 3 Pressed.")
       case _:
-        gv.logger.PrintString("Unknown Key Index.")
+        gVar.logger.PrintString("Unknown Key Index.")
 
 

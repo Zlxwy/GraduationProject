@@ -1,5 +1,5 @@
 # 创建一个黑色的帧
-import GlobalVariable as gv
+import GlobalVariable as gVar
 import numpy as np
 import cv2
 
@@ -38,25 +38,25 @@ def draw_table(img, pt1, pt2, rows, cols, color, thickness):
 
 def CamThreadFunc():
 
-  cap = cv2.VideoCapture(gv.CamIndex) # 打开摄像头
+  cap = cv2.VideoCapture(gVar.CamIndex) # 打开摄像头
   if not cap.isOpened(): # 如果摄像头未成功打开
-    gv.logger.PrintString("Thread_Cam Error: Camera not found.")
+    gVar.logger.PrintString("Thread_Cam Error: Camera not found.")
     return
-  cap.set(cv2.CAP_PROP_FRAME_WIDTH, gv.CapWidth) # 设置视频帧宽度
-  cap.set(cv2.CAP_PROP_FRAME_HEIGHT, gv.CapHeight) # 设置视频帧高度
+  cap.set(cv2.CAP_PROP_FRAME_WIDTH, gVar.CapWidth) # 设置视频帧宽度
+  cap.set(cv2.CAP_PROP_FRAME_HEIGHT, gVar.CapHeight) # 设置视频帧高度
 
   cv2.namedWindow('cam_roi') # 创建名为"cam_roi"的窗口
-  while not gv.exit_flag:
+  while not gVar.exit_flag:
     ret, frame_origin = cap.read() # 读取一帧图像
     if not ret: # 如果读取到的帧为空
-      gv.logger.PrintString("Thread_Cam Error: Failed to read frame from camera.")
+      gVar.logger.PrintString("Thread_Cam Error: Failed to read frame from camera.")
       break
     frame_origin_height, frame_origin_width = frame_origin.shape[0:2]
-    x = (frame_origin_width - gv.RoiWidth) // 2 # 计算裁剪区域的左上角x坐标
-    y = (frame_origin_height - gv.RoiHeight) // 2 # 计算裁剪区域的左上角y坐标
-    frame_roi = frame_origin[y:y+gv.RoiHeight, x:x+gv.RoiWidth] # 裁剪图像
+    x = (frame_origin_width - gVar.RoiWidth) // 2 # 计算裁剪区域的左上角x坐标
+    y = (frame_origin_height - gVar.RoiHeight) // 2 # 计算裁剪区域的左上角y坐标
+    frame_roi = frame_origin[y:y+gVar.RoiHeight, x:x+gVar.RoiWidth] # 裁剪图像
 
-    if gv.draw_table_flag:
+    if gVar.draw_table_flag:
       draw_table(frame_roi,
         pt1=(20,10),
         pt2=(1050,1070),
@@ -71,10 +71,10 @@ def CamThreadFunc():
       break # 退出循环
 
   cap.release() # 释放摄像头资源
-  gv.logger.PrintString("Thread_Cam Info: Camera resource released.")
+  gVar.logger.PrintString("Thread_Cam Info: Camera resource released.")
   cv2.destroyAllWindows() # 关闭所有窗口
-  gv.logger.PrintString("Thread_Cam Info: All windows closed.")
+  gVar.logger.PrintString("Thread_Cam Info: All windows closed.")
 
-  gv.logger.PrintString("Thread_Cam Info: Exit.") # 打印 Thread_Cam 已退出信息
+  gVar.logger.PrintString("Thread_Cam Info: Exit.") # 打印 Thread_Cam 已退出信息
 
 
