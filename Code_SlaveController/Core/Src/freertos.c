@@ -108,6 +108,18 @@ const osThreadAttr_t KeyScanReadTask_attributes = {
   .stack_size = sizeof(KeyScanReadTaskBuffer),
   .priority = (osPriority_t) osPriorityBelowNormal,
 };
+/* Definitions for ScreenDisplayTa */
+osThreadId_t ScreenDisplayTaHandle;
+uint32_t ScreenDisplayTaBuffer[ 128 ];
+osStaticThreadDef_t ScreenDisplayTaControlBlock;
+const osThreadAttr_t ScreenDisplayTa_attributes = {
+  .name = "ScreenDisplayTa",
+  .cb_mem = &ScreenDisplayTaControlBlock,
+  .cb_size = sizeof(ScreenDisplayTaControlBlock),
+  .stack_mem = &ScreenDisplayTaBuffer[0],
+  .stack_size = sizeof(ScreenDisplayTaBuffer),
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -119,6 +131,7 @@ void WriteWorkerTaskFunc(void *argument);
 void ReadWorkerTaskFunc(void *argument);
 void MotorActionTaskFunc(void *argument);
 void KeyScanReadTaskFunc(void *argument);
+void ScreenDisplayTaskFunc(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -163,6 +176,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of KeyScanReadTask */
   KeyScanReadTaskHandle = osThreadNew(KeyScanReadTaskFunc, NULL, &KeyScanReadTask_attributes);
+
+  /* creation of ScreenDisplayTa */
+  ScreenDisplayTaHandle = osThreadNew(ScreenDisplayTaskFunc, NULL, &ScreenDisplayTa_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -262,6 +278,24 @@ __weak void KeyScanReadTaskFunc(void *argument)
     osDelay(1);
   }
   /* USER CODE END KeyScanReadTaskFunc */
+}
+
+/* USER CODE BEGIN Header_ScreenDisplayTaskFunc */
+/**
+* @brief Function implementing the ScreenDisplayTa thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_ScreenDisplayTaskFunc */
+__weak void ScreenDisplayTaskFunc(void *argument)
+{
+  /* USER CODE BEGIN ScreenDisplayTaskFunc */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END ScreenDisplayTaskFunc */
 }
 
 /* Private application code --------------------------------------------------*/

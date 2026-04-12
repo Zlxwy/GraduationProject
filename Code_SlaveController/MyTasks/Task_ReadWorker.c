@@ -45,9 +45,11 @@ void ReadWorkerTaskFunc(void *argument) {
   (void)argument;
   IsAllInitOkay = false; // 标记主通信线程初始化未完成
 
+  /*消息队列创建*/
   gMsgQueueMotorAction = osMessageQueueNew(10, sizeof(Msg_MotorAction_t), NULL);
   if (gMsgQueueMotorAction == NULL) UartDmaStream_DebugPrintf(&gMainStream, "Failed to create message queue for motor action!\n");
 
+  /*硬件对象、标志位初始化*/
   UartDmaStream_Init(&gMainStream, &huart3, &hdma_usart3_tx, &hdma_usart3_rx, MyDelayWrapper);
   DigitalOutput_Init(&gLED0, LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET); // 初始化核心板上的D0灯
   DigitalOutput_Init(&gLED1, LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET); // 初始化核心板上的D1灯
@@ -61,7 +63,7 @@ void ReadWorkerTaskFunc(void *argument) {
     50, // 高电平占空比50%
     StepperMotorShoulder_Dir_GPIO_Port, // 方向引脚端口
     StepperMotorShoulder_Dir_Pin, // 方向引脚引脚
-    GPIO_PIN_RESET // 低电平为正转、逆时针转
+    GPIO_PIN_RESET // 低电平为正转、即肩关节逆时针转
   );
   StepperMotor_Init( // 初始化步进电机gStepperMotorElbow
     &gStepperMotorElbow, // 肘关节步进电机
@@ -73,7 +75,7 @@ void ReadWorkerTaskFunc(void *argument) {
     50, // 高电平占空比50%
     StepperMotorElbow_Dir_GPIO_Port, // 方向引脚端口
     StepperMotorElbow_Dir_Pin, // 方向引脚引脚
-    GPIO_PIN_SET // 高电平为正转
+    GPIO_PIN_SET // 高电平为正转，即肘关节逆时针转
   );
   StepperMotor_Init( // 初始化步进电机gStepperMotorLift
     &gStepperMotorLift, // 竖轴步进电机
@@ -85,16 +87,13 @@ void ReadWorkerTaskFunc(void *argument) {
     50, // 高电平占空比50%
     StepperMotorLift_Dir_GPIO_Port, // 方向引脚端口
     StepperMotorLift_Dir_Pin, // 方向引脚引脚
-    GPIO_PIN_SET // 高电平为正转
+    GPIO_PIN_RESET // 低电平为正转，即竖轴下降
   );
+  DigitalInput_Init(&gKey[0], KEY0_GPIO_Port, KEY0_Pin, GPIO_PIN_RESET);
+  DigitalInput_Init(&gKey[1], KEY1_GPIO_Port, KEY1_Pin, GPIO_PIN_RESET);
+  DigitalInput_Init(&gKey[2], KEY2_GPIO_Port, KEY2_Pin, GPIO_PIN_RESET);
+  DigitalInput_Init(&gKey[3], KEY3_GPIO_Port, KEY3_Pin, GPIO_PIN_RESET);
   for (uint16_t i=0; i<4; i++) {
-    switch (i) {
-      case 0: DigitalInput_Init(&gKey[i], KEY0_GPIO_Port, KEY0_Pin, GPIO_PIN_RESET); break;
-      case 1: DigitalInput_Init(&gKey[i], KEY1_GPIO_Port, KEY1_Pin, GPIO_PIN_RESET); break;
-      case 2: DigitalInput_Init(&gKey[i], KEY2_GPIO_Port, KEY2_Pin, GPIO_PIN_RESET); break;
-      case 3: DigitalInput_Init(&gKey[i], KEY3_GPIO_Port, KEY3_Pin, GPIO_PIN_RESET); break;
-      default: break;
-    }
     KeyPressedFlag[i] = false;
     HadKeyPressed[i] = false;
     KeyReleasedFlag[i] = false;
@@ -106,6 +105,7 @@ void ReadWorkerTaskFunc(void *argument) {
   DigitalOutput_Init(&gL298nInput3, L298N_IN3_GPIO_Port, L298N_IN3_Pin, GPIO_PIN_SET);
   DigitalOutput_Init(&gL298nInput4, L298N_IN4_GPIO_Port, L298N_IN4_Pin, GPIO_PIN_SET);
   DigitalInput_Init(&gLimitSwitchVerticalAxis, SIG3_GPIO_Port, SIG3_Pin, GPIO_PIN_RESET);
+  LCD_Init(); // 初始化LCD，用的是老版函数，就一条函数初始化完成了
   
   IsAllInitOkay = true;
 
@@ -139,13 +139,13 @@ void ReadWorkerTaskFunc(void *argument) {
           Parse_COMMAND_TYPE_MOTOR_BASIC_MOVE(PayloadData, PayloadLen);
         } // if (CommandType == COMMAND_TYPE_MOTOR_BASIC_MOVE)
 
-        else if (CommandType == COMMAND_TYPE_MOTOR_VERTICAL_AXIS_MOVE) {
-          Parse_COMMAND_TYPE_MOTOR_VERTICAL_AXIS_MOVE(PayloadData, PayloadLen);
-        } // else if (CommandType == COMMAND_TYPE_MOTOR_VERTICAL_AXIS_MOVE)
-
         else if (CommandType == COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST) {
           Parse_COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST(PayloadData, PayloadLen);
         } // else if (CommandType == COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST)
+
+        else if (CommandType == COMMAND_TYPE_MOTOR_VERTICAL_AXIS_MOVE) {
+          Parse_COMMAND_TYPE_MOTOR_VERTICAL_AXIS_MOVE(PayloadData, PayloadLen);
+        } // else if (CommandType == COMMAND_TYPE_MOTOR_VERTICAL_AXIS_MOVE)
 
         else if (CommandType == COMMAND_TYPE_SET_MAGNET_STATUS) {
           Parse_COMMAND_TYPE_MOTOR_SET_MAGNET_STATUS(PayloadData, PayloadLen);
@@ -213,14 +213,13 @@ void Parse_COMMAND_TYPE_MOTOR_BASIC_MOVE(uint8_t *PayloadData, uint32_t PayloadL
   }
 }
 
-void Parse_COMMAND_TYPE_MOTOR_SET_MAGNET_STATUS(uint8_t *PayloadData, uint32_t PayloadLen) {
+void Parse_COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST(uint8_t *PayloadData, uint32_t PayloadLen) {
   Msg_MotorAction_t msg;
-  msg.RequestType = MotorActionRequestType_SetMagnetStatus;
-  msg.MagnetStatus = PayloadData[2];
+  msg.RequestType = MotorActionRequestType_VerticalAxisRst;
   if ( osMessageQueuePut(gMsgQueueMotorAction, &msg, 0U, 0) == osOK ) {
-    UartDmaStream_LogPrintf(&gMainStream, "[COMMAND_TYPE_SET_MAGNET_STATUS] Parse Success!!!\n\n");
+    UartDmaStream_LogPrintf(&gMainStream, "[COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST] Parse Success!!!\n\n");
   } else {
-    UartDmaStream_LogPrintf(&gMainStream, "[COMMAND_TYPE_SET_MAGNET_STATUS] Parse Failed~~~\n\n");
+    UartDmaStream_LogPrintf(&gMainStream, "[COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST] Parse Failed~~~\n\n");
   }
 }
 
@@ -235,12 +234,13 @@ void Parse_COMMAND_TYPE_MOTOR_VERTICAL_AXIS_MOVE(uint8_t *PayloadData, uint32_t 
   }
 }
 
-void Parse_COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST(uint8_t *PayloadData, uint32_t PayloadLen) {
+void Parse_COMMAND_TYPE_MOTOR_SET_MAGNET_STATUS(uint8_t *PayloadData, uint32_t PayloadLen) {
   Msg_MotorAction_t msg;
-  msg.RequestType = MotorActionRequestType_VerticalAxisRst;
+  msg.RequestType = MotorActionRequestType_SetMagnetStatus;
+  msg.MagnetStatus = PayloadData[2];
   if ( osMessageQueuePut(gMsgQueueMotorAction, &msg, 0U, 0) == osOK ) {
-    UartDmaStream_LogPrintf(&gMainStream, "[COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST] Parse Success!!!\n\n");
+    UartDmaStream_LogPrintf(&gMainStream, "[COMMAND_TYPE_SET_MAGNET_STATUS] Parse Success!!!\n\n");
   } else {
-    UartDmaStream_LogPrintf(&gMainStream, "[COMMAND_TYPE_MOTOR_VERTICAL_AXIS_RST] Parse Failed~~~\n\n");
+    UartDmaStream_LogPrintf(&gMainStream, "[COMMAND_TYPE_SET_MAGNET_STATUS] Parse Failed~~~\n\n");
   }
 }

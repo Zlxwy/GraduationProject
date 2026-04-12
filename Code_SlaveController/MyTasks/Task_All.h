@@ -21,6 +21,7 @@
 #include "DigitalInput.h"
 #include "DigitalOutput.h"
 #include "StepperMotor.h"
+#include "LCD.h"
 
 extern UART_HandleTypeDef huart3;
 extern DMA_HandleTypeDef hdma_usart3_rx;

@@ -1021,6 +1021,26 @@
               <FileType>5</FileType>
               <FilePath>..\MyDrivers\StepperMotor.h</FilePath>
             </File>
+            <File>
+              <FileName>GpioBitBanding.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MyDrivers\GpioBitBanding.h</FilePath>
+            </File>
+            <File>
+              <FileName>LCD.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MyDrivers\LCD.c</FilePath>
+            </File>
+            <File>
+              <FileName>LCD.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MyDrivers\LCD.h</FilePath>
+            </File>
+            <File>
+              <FileName>LCD_font.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\MyDrivers\LCD_font.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1060,6 +1080,11 @@
               <FileName>Task_KeyScanRead.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\MyTasks\Task_KeyScanRead.c</FilePath>
+            </File>
+            <File>
+              <FileName>Task_ScreenDisplay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MyTasks\Task_ScreenDisplay.c</FilePath>
             </File>
           </Files>
         </Group>
