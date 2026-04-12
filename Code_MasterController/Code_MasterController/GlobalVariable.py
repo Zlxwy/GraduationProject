@@ -1,4 +1,4 @@
-# Shared.py
+# GlobalVariable.py
 
 exit_flag = False # 退出标志位
 
@@ -14,5 +14,10 @@ draw_table_flag = False # 绘制表格标志位
 
 logger = None
 
-FrameWidth = 1080
-FrameHeight = 1080
+CamIndex = 1
+CapWidth = 1920
+CapHeight = 1080
+RoiWidth = CapHeight
+RoiHeight = CapHeight
+
+

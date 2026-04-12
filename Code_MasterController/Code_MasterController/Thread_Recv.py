@@ -1,4 +1,4 @@
-import Shared as gVar
+import GlobalVariable as gv
 import time
 from MyLibs.Log import Log
 from MyLibs.UartStream import *
@@ -6,20 +6,24 @@ from MyLibs.BytesConv import BytesToUint16_BigEndian as b2u16
 from MyLibs.BytesConv import BytesToUint32_BigEndian as b2u32
 from MyLibs.BytesConv import BytesToUint64_BigEndian as b2u64
 from MyLibs.BytesConv import BytesToInt16_BigEndian as b2s16
-
-
-
-
-
-
+from MyLibs.BytesConv import BytesToInt32_BigEndian as b2s32
+from MyLibs.BytesConv import BytesToInt64_BigEndian as b2s64
+from MyLibs.BytesConv import BytesToFloat32_BigEndian as b2f32
+from MyLibs.BytesConv import Uint16ToBytes_BigEndian as u162b
+from MyLibs.BytesConv import Uint32ToBytes_BigEndian as u322b
+from MyLibs.BytesConv import Uint64ToBytes_BigEndian as u642b
+from MyLibs.BytesConv import Int16ToBytes_BigEndian as s162b
+from MyLibs.BytesConv import Int32ToBytes_BigEndian as s322b
+from MyLibs.BytesConv import Int64ToBytes_BigEndian as s642b
+from MyLibs.BytesConv import Float32ToBytes_BigEndian as f322b
 
 
 def RecvThreadFunc():
   gMainStream = UartStream(port="COM9", baudrate=115200) # 创建 UartStream 实例
   gMainStream.start() # 启动 UartStream 实例
-  gVar.logger.PrintString("UartStream has started.") # 打印 UartStream 实例已启动信息
-  
-  while not gVar.exit_flag:
+  gv.logger.PrintString("Thread_Recv Info: UartStream has started.") # 打印 UartStream 实例已启动信息
+
+  while not gv.exit_flag:
     ReadFrameBuffer, ReadState = gMainStream.ReadFrame(timeout=1000) # 读取数据帧
     if ReadState == UartStream_ReadState.Successful:
       FrameType = ReadFrameBuffer[1]
@@ -34,20 +38,20 @@ def RecvThreadFunc():
         pass
 
       elif FrameType == UartStream_FrameHead.FrameHead2_Evt: # 接收到的是事件帧
-        if CommandType == gVar.COMMAND_TYPE_KEY_CLICK:
+        if CommandType == gv.COMMAND_TYPE_KEY_CLICK:
           Parse_COMMAND_TYPE_KEY_CLICK(PayloadData, PayloadLen)
         pass
 
       else: # 其他帧类型
-        gVar.logger.PrintString("Unknown Frame Type.")
+        gv.logger.PrintString("Thread_Recv Info: Unknown Frame Type.")
         pass
       
     else:
-      gVar.logger.PrintString("Receive Timeout~~~")
+      gv.logger.PrintString("Thread_Recv Info: Receive Timeout~~~")
 
   gMainStream.stop() # 停止 UartStream 实例
-  gVar.logger.PrintString("UartStream has been stopped.") # 打印 UartStream 实例已停止信息
-  gVar.logger.PrintString("Thread_Recv has exit.") # 打印 Thread_Recv 已退出信息
+  gv.logger.PrintString("Thread_Recv Info: UartStream has been stopped.") # 打印 UartStream 实例已停止信息
+  gv.logger.PrintString("Thread_Recv Info: Exit.") # 打印 Thread_Recv 已退出信息
 
 
 
@@ -61,18 +65,18 @@ def Parse_COMMAND_TYPE_KEY_CLICK(PayloadData: bytes, PayloadLen: int):
   if KeyMotion == 0x00: # 只处理按下事件
     match KeyIndex:
       case 0x0000:
-        gVar.draw_table_flag = not gVar.draw_table_flag
-        gVar.logger.PrintString("Key 0 Pressed.")
+        gv.draw_table_flag = not gv.draw_table_flag
+        gv.logger.PrintString("Key 0 Pressed.")
       case 0x0001:
-        gVar.draw_table_flag = not gVar.draw_table_flag
-        gVar.logger.PrintString("Key 1 Pressed.")
+        gv.draw_table_flag = not gv.draw_table_flag
+        gv.logger.PrintString("Key 1 Pressed.")
       case 0x0002:
-        gVar.draw_table_flag = not gVar.draw_table_flag
-        gVar.logger.PrintString("Key 2 Pressed.")
+        gv.draw_table_flag = not gv.draw_table_flag
+        gv.logger.PrintString("Key 2 Pressed.")
       case 0x0003:
-        gVar.draw_table_flag = not gVar.draw_table_flag
-        gVar.logger.PrintString("Key 3 Pressed.")
+        gv.draw_table_flag = not gv.draw_table_flag
+        gv.logger.PrintString("Key 3 Pressed.")
       case _:
-        gVar.logger.PrintString("Unknown Key Index.")
+        gv.logger.PrintString("Unknown Key Index.")
 
 

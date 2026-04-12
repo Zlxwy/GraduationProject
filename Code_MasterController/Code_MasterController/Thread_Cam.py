@@ -1,5 +1,5 @@
 # 创建一个黑色的帧
-import Shared as gVar
+import GlobalVariable as gv
 import numpy as np
 import cv2
 
@@ -37,16 +37,27 @@ def draw_table(img, pt1, pt2, rows, cols, color, thickness):
 
 
 def CamThreadFunc():
-  cv2.namedWindow('black_frame') # 创建名为"black_frame"的窗口
 
-  while not gVar.exit_flag:
-    black_frame = np.zeros(
-      (gVar.FrameHeight, gVar.FrameWidth, 3),
-      dtype=np.uint8
-    )
+  cap = cv2.VideoCapture(gv.CamIndex) # 打开摄像头
+  if not cap.isOpened(): # 如果摄像头未成功打开
+    gv.logger.PrintString("Thread_Cam Error: Camera not found.")
+    return
+  cap.set(cv2.CAP_PROP_FRAME_WIDTH, gv.CapWidth) # 设置视频帧宽度
+  cap.set(cv2.CAP_PROP_FRAME_HEIGHT, gv.CapHeight) # 设置视频帧高度
 
-    if gVar.draw_table_flag:
-      draw_table(black_frame, 
+  cv2.namedWindow('cam_roi') # 创建名为"cam_roi"的窗口
+  while not gv.exit_flag:
+    ret, frame_origin = cap.read() # 读取一帧图像
+    if not ret: # 如果读取到的帧为空
+      gv.logger.PrintString("Thread_Cam Error: Failed to read frame from camera.")
+      break
+    frame_origin_height, frame_origin_width = frame_origin.shape[0:2]
+    x = (frame_origin_width - gv.RoiWidth) // 2 # 计算裁剪区域的左上角x坐标
+    y = (frame_origin_height - gv.RoiHeight) // 2 # 计算裁剪区域的左上角y坐标
+    frame_roi = frame_origin[y:y+gv.RoiHeight, x:x+gv.RoiWidth] # 裁剪图像
+
+    if gv.draw_table_flag:
+      draw_table(frame_roi,
         pt1=(20,10),
         pt2=(1050,1070),
         rows=9, cols=8,
@@ -54,14 +65,16 @@ def CamThreadFunc():
         thickness=2
       )
 
-    cv2.imshow('black_frame', black_frame) # 在窗口中显示黑色帧
-
+    cv2.imshow('cam_roi', frame_roi) # 在窗口中显示裁剪后的图像
     PressKey = cv2.waitKey(10) & 0xFF
     if PressKey & 0xFF == 27: # 如果按下ESC键
       break # 退出循环
 
-
+  cap.release() # 释放摄像头资源
+  gv.logger.PrintString("Thread_Cam Info: Camera resource released.")
   cv2.destroyAllWindows() # 关闭所有窗口
-  gVar.logger.PrintString("Thread_Cam has exit.") # 打印 Thread_Cam 已退出信息
+  gv.logger.PrintString("Thread_Cam Info: All windows closed.")
+
+  gv.logger.PrintString("Thread_Cam Info: Exit.") # 打印 Thread_Cam 已退出信息
 
 
