@@ -67,7 +67,7 @@ ax.set_title('图1：矢量分解基本概念', fontsize=14, fontweight='bold')
 ax.set_xlabel('x')
 ax.set_ylabel('y')
 plt.tight_layout()
-plt.savefig('c:/Users/ZLXWY/Desktop/vector_decomposition/fig1_basic_concept.png', dpi=150)
+plt.savefig('./figures/fig1_basic_concept.png', dpi=150)
 plt.close()
 
 
@@ -128,7 +128,7 @@ ax.set_title('图2：余弦定理与三角形关系', fontsize=14, fontweight='b
 ax.set_xlabel('x')
 ax.set_ylabel('y')
 plt.tight_layout()
-plt.savefig('c:/Users/ZLXWY/Desktop/vector_decomposition/fig2_law_of_cosines.png', dpi=150)
+plt.savefig('./figures/fig2_law_of_cosines.png', dpi=150)
 plt.close()
 
 
@@ -180,9 +180,9 @@ for idx, (sol_label, sign) in enumerate([('解0', -1), ('解1', +1)]):
     ax.set_xlabel('x')
     ax.set_ylabel('y')
 
-plt.suptitle('图3：两组解对比（同一C可有两种分解方式）', fontsize=14, fontweight='bold', y=1.02)
+plt.suptitle('图3：两组解对比（同一矢量可有两种分解方式）', fontsize=14, fontweight='bold', y=0.96)
 plt.tight_layout()
-plt.savefig('c:/Users/ZLXWY/Desktop/vector_decomposition/fig3_two_solutions.png', dpi=150)
+plt.savefig('./figures/fig3_two_solutions.png', dpi=150)
 plt.close()
 
 
@@ -218,15 +218,15 @@ for i, (title, la, lb, lc, solvable) in enumerate(cases):
         ax.text(A[0]/2, A[1]/2 + 0.4, f'|A|={la}', fontsize=10, color='red')
         ax.text((A[0]+c_vec[0])/2, (A[1]+c_vec[1])/2 + 0.4, f'|B|={lb}', fontsize=10, color='green')
     else:
-        ax.annotate('', xy=c_vec, xytext=(0,0),
-                    arrowprops=dict(arrowstyle='->', color='blue', lw=2))
-        ax.annotate('', xy=(la, 0), xytext=(0,0),
-                    arrowprops=dict(arrowstyle='->', color='red', lw=2))
-        ax.text(la/2, 0.5, f'|A|={la}', fontsize=10, color='red')
-        # 画圆弧表示B够不到
-        circle = plt.Circle((la, 0), lb, fill=False, color='green', linestyle='--', lw=1.5)
-        ax.add_patch(circle)
-        ax.text(lc + 0.5, -1, f'无法到达\n|B|={lb} < |C|-|A|', fontsize=9, color='gray')
+            ax.annotate('', xy=c_vec, xytext=(0,0),
+                        arrowprops=dict(arrowstyle='->', color='blue', lw=2))
+            ax.annotate('', xy=(la, 0), xytext=(0,0),
+                        arrowprops=dict(arrowstyle='->', color='red', lw=2))
+            ax.text(la/2, 0.5, f'|A|={la}', fontsize=10, color='red')
+            # 画圆弧表示B够不到
+            circle = plt.Circle((la, 0), lb, fill=False, color='green', linestyle='--', lw=1.5)
+            ax.add_patch(circle)
+            ax.text(lc + 0.5, -1, f'无法到达\n|A|+|B|={la+lb} < |C|={lc}', fontsize=9, color='gray')
 
     ax.set_title(title, fontsize=12, fontweight='bold')
     ax.set_xlim(-2, 12)
@@ -236,9 +236,9 @@ for i, (title, la, lb, lc, solvable) in enumerate(cases):
     ax.axhline(y=0, color='k', lw=0.5)
     ax.axvline(x=0, color='k', lw=0.5)
 
-plt.suptitle('图4：三角形不等式与可解性', fontsize=14, fontweight='bold', y=1.02)
+plt.suptitle('图4：三角形不等式与可解性', fontsize=14, fontweight='bold', y=0.96)
 plt.tight_layout()
-plt.savefig('c:/Users/ZLXWY/Desktop/vector_decomposition/fig4_triangle_inequality.png', dpi=150)
+plt.savefig('./figures/fig4_triangle_inequality.png', dpi=150)
 plt.close()
 
 
@@ -293,7 +293,7 @@ ax.set_title('图5：连杆机构应用（$|A|=100, |B|=80$）', fontsize=14, fo
 ax.set_xlabel('x (mm)')
 ax.set_ylabel('y (mm)')
 plt.tight_layout()
-plt.savefig('c:/Users/ZLXWY/Desktop/vector_decomposition/fig5_linkage_example.png', dpi=150)
+plt.savefig('./figures/fig5_linkage_example.png', dpi=150)
 plt.close()
 
 
@@ -336,9 +336,9 @@ for ax in axes:
     ax.axhline(y=0, color='k', lw=0.5)
     ax.axvline(x=0, color='k', lw=0.5)
 
-plt.suptitle('图6：特殊几何构型', fontsize=14, fontweight='bold', y=1.02)
+plt.suptitle('图6：特殊几何构型', fontsize=14, fontweight='bold', y=0.96)
 plt.tight_layout()
-plt.savefig('c:/Users/ZLXWY/Desktop/vector_decomposition/fig6_special_cases.png', dpi=150)
+plt.savefig('./figures/fig6_special_cases.png', dpi=150)
 plt.close()
 
 print("All figures generated successfully!")
