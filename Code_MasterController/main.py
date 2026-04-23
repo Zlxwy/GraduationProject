@@ -373,6 +373,15 @@ def ChessEngine_CallFunc():
 
 
 if __name__ == "__main__":
+  if gVar.MyDevice == "Linux": # 如果是Linux系统，全局限制线程数为1，避免多线程导致的性能问题
+    os.environ["OMP_NUM_THREADS"] = "1" # 设置OMP线程数为1
+    os.environ["MKL_NUM_THREADS"] = "1" # 设置MKL线程数为1
+    os.environ["OPENBLAS_NUM_THREADS"] = "1" # 设置OpenBLAS线程数为1
+
+
+
+
+
   gVar.logger = Log() # 创建Log实例
   gVar.logger.PrintString("Info: 日志打印对象已初始化，可前往./Logs/目录下查看") # 打印Log已初始化信息
 
@@ -411,7 +420,12 @@ if __name__ == "__main__":
 
 
   try:
-    gVar.MainStream = UartStream(port="COM9", baudrate=115200) # 创建 UartStream 实例
+    UartDevice = None # 初始为None
+    match gVar.MyDevice: # 根据不同设备选择不同的串口设备
+      case "Windows": UartDevice = "COM9"
+      case "Linux": UartDevice = "/dev/ttyS1"
+      case _: UartDevice = None
+    gVar.MainStream = UartStream(port=UartDevice, baudrate=115200) # 创建 UartStream 实例
     gVar.MainStream.start() # 启动 UartStream 实例
     gVar.logger.PrintString("Info: 串口流已成功启动") # 打印 UartStream 实例已启动信息
   except Exception as e:
@@ -470,7 +484,12 @@ if __name__ == "__main__":
 
 
 
-  gVar.Cap = cv2.VideoCapture(gVar.CamIndex) # 打开摄像头
+  cam_index = None # 摄像头索引
+  match gVar.MyDevice:
+    case "Windows": cam_index = 1 # Windows原本有一个摄像头，所以接入的这个摄像头索引为1了
+    case "Linux": cam_index = 0 # Linux默认有一个摄像头，所以接入的这个摄像头索引为0了
+    case _: cam_index = None # 其他设备默认不接入摄像头
+  gVar.Cap = cv2.VideoCapture(cam_index) # 打开摄像头
   if not gVar.Cap.isOpened(): # 如果摄像头未成功打开
     gVar.logger.PrintString("Info: 打开摄像头失败~~~")
     exit(0) # 直接退出程序
@@ -934,7 +953,7 @@ if __name__ == "__main__":
             cv2.arrowedLine( frame_roi, # 显示用户落子路径的箭头线
               gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ ord(gVar.UserMove[0])-ord('a') ] [ ord(gVar.UserMove[1])-ord('0') ],
               gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ ord(gVar.UserMove[2])-ord('a') ] [ ord(gVar.UserMove[3])-ord('0') ],
-              (0,255,0), 5
+              gVar.UserMoveArrowColor, 5
             ) # 绘制用户落子的路径
       elif gVar.IsGameRunning and gVar.IsUserTurn: # 如果游戏运行中，且是用户回合，对棋盘局势不作识别，提示用户落子，等待用户按空格键确认
         cv2.putText(frame_roi, "Move piece and Press SPACE to confirm", (10,160), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2) # 图像标注落子提示
@@ -942,7 +961,7 @@ if __name__ == "__main__":
           cv2.arrowedLine( frame_roi, # 在图像帧中绘制电脑落子路径的箭头线
             gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ ord(gVar.PcMoveAgainstUser[0])-ord('a') ] [ ord(gVar.PcMoveAgainstUser[1])-ord('0') ],
             gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ ord(gVar.PcMoveAgainstUser[2])-ord('a') ] [ ord(gVar.PcMoveAgainstUser[3])-ord('0') ],
-            (0,255,0), 5
+            gVar.PcMoveArrowColor, 5
           )
       elif not gVar.IsGameRunning and gVar.IsGameOver: # 如果游戏不在运行中，且游戏结束了，提示用户按空格键返回并重新开始
         cv2.putText(frame_roi, "Game Over, press SPACE to Return and Restart", (10,160), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2) # 图像标注游戏游戏结束了提示
@@ -950,13 +969,13 @@ if __name__ == "__main__":
           cv2.arrowedLine( frame_roi,
             gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ ord(gVar.UserMove[0])-ord('a') ] [ ord(gVar.UserMove[1])-ord('0') ],
             gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ ord(gVar.UserMove[2])-ord('a') ] [ ord(gVar.UserMove[3])-ord('0') ],
-            (0,255,0), 5
+            gVar.UserMoveArrowColor, 5
           ) # 绘制用户落子的路径
         elif gVar.IsPcWin: # 如果电脑赢了
           cv2.arrowedLine( frame_roi,
             gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ ord(gVar.PcMoveAgainstUser[0])-ord('a') ] [ ord(gVar.PcMoveAgainstUser[1])-ord('0') ],
             gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ ord(gVar.PcMoveAgainstUser[2])-ord('a') ] [ ord(gVar.PcMoveAgainstUser[3])-ord('0') ],
-            (0,255,0), 5
+            gVar.PcMoveArrowColor, 5
           ) # 绘制电脑走棋路径
         else: # 输赢状态异常
           gVar.logger.PrintString(f"Error: 未知游戏结束标志位，IsUserWin={gVar.IsUserWin}, IsPcWin={gVar.IsPcWin}")

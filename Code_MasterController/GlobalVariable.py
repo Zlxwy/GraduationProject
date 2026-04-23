@@ -2,9 +2,30 @@
 import numpy as np
 
 
+MyDevice = "Windows"
+# MyDevice = "Linux"
 
 
-exit_flag = False # 退出标志位
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 每一条对应协议中的命令类型
 COMMAND_TYPE_MOTOR_BASIC_MOVE = 0x0000
@@ -35,7 +56,6 @@ mark_point = [0,0]
 
 
 Cap = None # 摄像头对象
-CamIndex = 1 # 摄像头索引
 
 CapWidth = 1920
 CapHeight = 1080
@@ -183,3 +203,5 @@ ChessEngine_ResultFinished = False # 调用象棋引擎的结果是否完成
 
 UserMove = None # 用户落子字符串
 PcMoveAgainstUser = None # 电脑落子字符串，对弈中电脑落子
+UserMoveArrowColor = ( 0, 0, 255 ) # 用户走棋路径用红色
+PcMoveArrowColor = ( 30, 30, 30 ) # 电脑走棋路径用灰色
