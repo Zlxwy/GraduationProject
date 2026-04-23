@@ -50,7 +50,7 @@ def IsBlack(chessID) -> bool: # 判断棋子是不是黑色棋子
 
 def GetOneChessString(chessID): # 获取一个棋子的字符串表达形式
     if IsBlack(chessID):
-        return '\033[0;37;100m' + chessTextChi[chessID] + '\033[0m' # 黑色棋子：字体白色，背景为深灰色
+        return '\033[0;37;44m' + chessTextChi[chessID] + '\033[0m' # 黑色棋子：字体白色，背景为蓝色
     elif IsRed(chessID):
         return '\033[0;37;41m' + chessTextChi[chessID] + '\033[0m' # 红色棋子：字体白色，背景为红色
     return chessTextChi[chessID] # 没有棋子，显示一个'+'
@@ -81,7 +81,7 @@ def PrintChessBoard(chessBoard): # 打印整个棋局
         elif i==5 or i==19:
             print(r'|    |    |    |    |  / | \  |    |    |    |    |') # 九宫竖线，原样输出，不转义
         elif i==11:
-            print('|    |        楚河               漢界        |    |') # 楚河汉界
+            print('|    |        楚河               汉界        |    |') # 楚河汉界
 
 
 def MakeMove(chessBoard, movePath): # 根据某一走法产生走之后的棋盘，参数:(当前棋盘,走棋路线)
