@@ -1,0 +1,33 @@
+# 编辑器缓存
+.vscode/
+.trae/
+*.bak
+
+# Keil MDK 专属忽略
+*.axf
+*.hex
+*.elf
+*.map
+*.lst
+*.o
+*.d
+*.obj
+*.crf
+*.lnp
+*.build_log.htm
+*.dep
+*.iex
+*.htm
+*.sctobj
+*.uvopt.bak
+*.uvprojx.bak
+*.bak*
+MDK-ARM/*
+!MDK-ARM/*.uvoptx
+!MDK-ARM/*.uvprojx
+!MDK-ARM/*.s
+
+#  STM32CubeMX 专属忽略
+# CubeMX自动生成的工程文件（核心配置保留，生成文件忽略）
+*.ioc.bak        # IOC配置备份
+*.ioc.user       # CubeMX本地用户配置
