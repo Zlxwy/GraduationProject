@@ -1,5 +1,3 @@
-用VSCode之类编辑器打开
+用VSCode之类编辑器打开，搜索目录下所有的"WinFormsTemplate"字眼，替换为自己所需的项目名称
 
-搜索目录下所有的"WinFormsTemplate"字眼，替换为自己所需的项目名称
-
-将文件所以带有"WinFormsTemplate"字眼的，更改为自己所需的项目名称
+将所有带有"WinFormsTemplate"字眼文件名的文件，更改为自己所需的项目名称
