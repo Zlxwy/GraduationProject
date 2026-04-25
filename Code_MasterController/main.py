@@ -140,6 +140,32 @@ def CreateCommand_SetElectroMagnet(status):
   Bytes_Electromagnet = Bytes_CommandType + Bytes_Status
   return Bytes_Electromagnet
 
+def allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec):
+  """
+  brief:
+    分配平面两轴速度，使得机械臂在need_time_ms内，移动dStepShoulder和dStepElbow步数
+  params:
+    dStepShoulder: 大臂步数
+    dStepElbow: 小臂步数
+    deg_per_sec: 1秒旋转的角度
+  return:
+    speed_shoulder: 大臂速度
+    speed_elbow: 小臂速度
+  """
+  deg_angle_shoulder = abs(gVar.tsm.StepToPosition("Shoulder", dStepShoulder)) # 大臂需要旋转的角度
+  deg_angle_elbow = abs(gVar.tsm.StepToPosition("Elbow", dStepElbow)) # 小臂需要旋转的角度
+  deg_angle_max = max(deg_angle_shoulder, deg_angle_elbow) # 获取旋转角度最大的那个
+  need_time = deg_angle_max / deg_per_sec # 以旋转角度最大的那个为准，计算需要旋转的时间
+  speed_shoulder = abs(dStepShoulder) / need_time # 以得到的旋转时间计算大臂的速度
+  speed_elbow = abs(dStepElbow) / need_time # 以得到的旋转时间计算小臂的速度
+  gVar.logger.PrintString(f"deg_angle_shoulder: {deg_angle_shoulder}")
+  gVar.logger.PrintString(f"deg_angle_elbow: {deg_angle_elbow}")
+  gVar.logger.PrintString(f"deg_angle_max: {deg_angle_max}")
+  gVar.logger.PrintString(f"need_time: {need_time}")
+  gVar.logger.PrintString(f"speed_shoulder: {speed_shoulder}")
+  gVar.logger.PrintString(f"speed_elbow: {speed_elbow}")
+  return int(speed_shoulder), int(speed_elbow) # 以整数形式返回
+
 # CreateCommandList_DriveMotor_XXXXXXXXXX(
 #   StartPosIndex=[ord(gVar.PcMoveAgainstUser[0])-ord('a'), ord(gVar.PcMoveAgainstUser[1])-ord('0')],
 #   TargetPosIndex=[ord(gVar.PcMoveAgainstUser[2])-ord('a'), ord(gVar.PcMoveAgainstUser[3])-ord('0')]
@@ -164,6 +190,9 @@ def CreateCommandList_DriveMotor_DropSelfPiece(StartPosIndex, TargetPosIndex):
     StartPosIndex: 起始位置CV坐标的索引
     TargetPosIndex: 目标位置CV坐标的索引
   """
+  deg_per_sec = 60.0 # 1秒旋转90度
+  speed_lift = 1500 # 竖轴速度
+
   # 计算起点位置时，两个机械臂的角度
   CvPlane_StartPos = gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ StartPosIndex[0] ] [ StartPosIndex[1] ] # 以棋盘交点的位置
   try:
@@ -179,13 +208,14 @@ def CreateCommandList_DriveMotor_DropSelfPiece(StartPosIndex, TargetPosIndex):
 
   # 此时获得了DegAngle_StartPos_Shoulder, DegAngle_StartPos_Elbow，开始组合指令
   dStepShoulder, dStepElbow, dStepLift = gVar.tsm.DRIVE_MOTOR(DegAngle_StartPos_Shoulder, DegAngle_StartPos_Elbow, 100.0) # 更新三轴的位置，并获取转动步数
-  cmd1 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=200) # 指令1：移动大臂到起始位置的指定角度
-  cmd2 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=200) # 指令2：移动小臂到起始位置的指定角度
-  cmd3 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令3：竖轴下降
+  speed_shoulder, speed_elbow = allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec) # 分配平面两轴速度
+  cmd1 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=speed_shoulder) # 指令1：移动大臂到起始位置的指定角度
+  cmd2 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=speed_elbow) # 指令2：移动小臂到起始位置的指定角度
+  cmd3 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令3：竖轴下降
   cmd4 = CreateCommand_SetElectroMagnet(status=0x01) # 指令4：电磁铁通电
 
   _, _, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.tsm.PositionShoulder, gVar.tsm.PositionElbow, 0.0) # 只更新竖轴位置为0.0
-  cmd5 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令5：竖轴上升
+  cmd5 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令5：竖轴上升
 
   # 计算目标位置时，两个机械臂的角度
   CvPlane_TargetPos = gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ TargetPosIndex[0] ] [ TargetPosIndex[1] ] # 目标点是肯定没有棋子，所以要以棋盘交点的位置为准
@@ -202,9 +232,10 @@ def CreateCommandList_DriveMotor_DropSelfPiece(StartPosIndex, TargetPosIndex):
 
   # 此时获得了DegAngle_TargetPos_Shoulder, DegAngle_TargetPos_Elbow，开始组合指令
   dStepShoulder, dStepElbow, dStepLift = gVar.tsm.DRIVE_MOTOR(DegAngle_TargetPos_Shoulder, DegAngle_TargetPos_Elbow, 100.0) # 更新三轴的位置，并获取转动步数
-  cmd6 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=200) # 指令6：移动大臂到目标位置的指定角度
-  cmd7 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=200) # 指令7：移动小臂到目标位置的指定角度
-  cmd8 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令8：竖轴下降
+  speed_shoulder, speed_elbow = allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec) # 分配平面两轴速度
+  cmd6 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=speed_shoulder) # 指令6：移动大臂到目标位置的指定角度
+  cmd7 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=speed_elbow) # 指令7：移动小臂到目标位置的指定角度
+  cmd8 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令8：竖轴下降
   cmd9 = CreateCommand_SetElectroMagnet(status=0x00) # 指令9：电磁铁断电
 
   _, _, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.tsm.PositionShoulder, gVar.tsm.PositionElbow, 0.0) # 只更新竖轴位置为0.0
@@ -213,8 +244,9 @@ def CreateCommandList_DriveMotor_DropSelfPiece(StartPosIndex, TargetPosIndex):
 
   # 组合向待机位移动的指令
   dStepShoulder, dStepElbow, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.DegAngle_StandByPos_Shoulder, gVar.DegAngle_StandByPos_Ebow, gVar.DegAngle_StandByPos_Lift) # 更新三轴的位置，并获取转动步数
-  cmd11 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=200) # 指令11：移动大臂到待机位置的指定角度
-  cmd12 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=200) # 指令12：移动小臂到待机位置的指定角度
+  speed_shoulder, speed_elbow = allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec) # 分配平面两轴速度
+  cmd11 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=speed_shoulder) # 指令11：移动大臂到待机位置的指定角度
+  cmd12 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=speed_elbow) # 指令12：移动小臂到待机位置的指定角度
   
   return [cmd1, cmd2, cmd3, cmd4, cmd5, cmd6, cmd7, cmd8, cmd9, cmd10, cmd11, cmd12] # 指令列表，每个元素都是一个字节数组
 
@@ -248,6 +280,9 @@ def CreateCommandList_DriveMotor_CapOppoPiece(StartPosIndex, TargetPosIndex):
     StartPosIndex: 起始位置CV坐标的索引
     TargetPosIndex: 目标位置CV坐标的索引
   """
+  deg_per_sec = 60.0 # 1秒旋转90度
+  speed_lift = 1500 # 竖轴速度
+
   # 计算被吃子位置时，两个机械臂的角度
   CvPlane_EatedPiece = gVar.ChessBoard_ChessPiecePointsGrid_CvPlane [ TargetPosIndex[0] ] [ TargetPosIndex[1] ] # 被吃棋子的位置，要以棋子实际位置为准，而不是棋盘交点的位置
   try:
@@ -263,9 +298,10 @@ def CreateCommandList_DriveMotor_CapOppoPiece(StartPosIndex, TargetPosIndex):
   
   # 此时获得了DegAngle_EatedPiecePos_Shoulder, DegAngle_EatedPiecePos_Elbow，开始组合指令
   dStepShoulder, dStepElbow, dStepLift = gVar.tsm.DRIVE_MOTOR(DegAngle_EatedPiecePos_Shoulder, DegAngle_EatedPiecePos_Elbow, 100.0) # 更新三轴的位置，并获取转动步数
-  cmd1 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=200) # 指令1：移动大臂到吃子位置的指定角度
-  cmd2 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=200) # 指令2：移动小臂到吃子位置的指定角度
-  cmd3 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令3：竖轴下降
+  speed_shoulder, speed_elbow = allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec) # 分配平面两轴速度
+  cmd1 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=speed_shoulder) # 指令1：移动大臂到吃子位置的指定角度
+  cmd2 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=speed_elbow) # 指令2：移动小臂到吃子位置的指定角度
+  cmd3 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令3：竖轴下降
   cmd4 = CreateCommand_SetElectroMagnet(status=0x01) # 指令4：电磁铁通电
   
   _, _, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.tsm.PositionShoulder, gVar.tsm.PositionElbow, 0.0) # 只更新竖轴位置为0.0
@@ -282,13 +318,14 @@ def CreateCommandList_DriveMotor_CapOppoPiece(StartPosIndex, TargetPosIndex):
     gVar.logger.PrintString(f"Error: 执行【吃子操作】中，计算【吃子盒】的双连杆角度失败 {e}")
   
   dStepShoulder, dStepElbow, dStepLift = gVar.tsm.DRIVE_MOTOR(DegAngle_CapBoxPos_Shoulder, DegAngle_CapBoxPos_Elbow, 20.0) # 更新三轴的位置，并获取转动步数
-  cmd6 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=200) # 指令6：移动大臂到吃子盒位置的指定角度
-  cmd7 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=200) # 指令7：移动小臂到吃子盒位置的指定角度
-  cmd8 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令8：竖轴下降20%
+  speed_shoulder, speed_elbow = allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec) # 分配平面两轴速度
+  cmd6 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=speed_shoulder) # 指令6：移动大臂到吃子盒位置的指定角度
+  cmd7 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=speed_elbow) # 指令7：移动小臂到吃子盒位置的指定角度
+  cmd8 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令8：竖轴下降20%
   cmd9 = CreateCommand_SetElectroMagnet(status=0x00) # 指令9：电磁铁断电
 
   _, _, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.tsm.PositionShoulder, gVar.tsm.PositionElbow, 0.0) # 只更新竖轴位置为0.0
-  cmd10 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令10：竖轴上升
+  cmd10 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令10：竖轴上升
 
   # 计算起点位置时，两个机械臂的角度
   CvPlane_StartPos = gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ StartPosIndex[0] ] [ StartPosIndex[1] ] # 以棋盘交点的位置
@@ -305,13 +342,14 @@ def CreateCommandList_DriveMotor_CapOppoPiece(StartPosIndex, TargetPosIndex):
 
   # 此时获得了DegAngle_StartPos_Shoulder, DegAngle_StartPos_Elbow，开始组合指令
   dStepShoulder, dStepElbow, dStepLift = gVar.tsm.DRIVE_MOTOR(DegAngle_StartPos_Shoulder, DegAngle_StartPos_Elbow, 100.0) # 更新三轴的位置，并获取转动步数
-  cmd11 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=200) # 指令11：移动大臂到起始位置的指定角度
-  cmd12 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=200) # 指令12：移动小臂到起始位置的指定角度
-  cmd13 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令13：竖轴下降
+  speed_shoulder, speed_elbow = allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec) # 分配平面两轴速度
+  cmd11 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=speed_shoulder) # 指令11：移动大臂到起始位置的指定角度
+  cmd12 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=speed_elbow) # 指令12：移动小臂到起始位置的指定角度
+  cmd13 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令13：竖轴下降
   cmd14 = CreateCommand_SetElectroMagnet(status=0x01) # 指令14：电磁铁通电
 
   _, _, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.tsm.PositionShoulder, gVar.tsm.PositionElbow, 0.0) # 只更新竖轴位置为0.0
-  cmd15 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令15：竖轴上升
+  cmd15 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令15：竖轴上升
 
   # 计算目标位置时，两个机械臂的角度
   CvPlane_TargetPos = gVar.ChessBoard_IntersectionPointsGrid_CvPlane [ TargetPosIndex[0] ] [ TargetPosIndex[1] ] # 目标点是肯定没有棋子，所以要以棋盘交点的位置为准
@@ -328,9 +366,10 @@ def CreateCommandList_DriveMotor_CapOppoPiece(StartPosIndex, TargetPosIndex):
 
   # 此时获得了DegAngle_TargetPos_Shoulder, DegAngle_TargetPos_Elbow，开始组合指令
   dStepShoulder, dStepElbow, dStepLift = gVar.tsm.DRIVE_MOTOR(DegAngle_TargetPos_Shoulder, DegAngle_TargetPos_Elbow, 100.0) # 更新三轴的位置，并获取转动步数
-  cmd16 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=200) # 指令16：移动大臂到目标位置的指定角度
-  cmd17 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=200) # 指令17：移动小臂到目标位置的指定角度
-  cmd18 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令18：竖轴下降
+  speed_shoulder, speed_elbow = allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec) # 分配平面两轴速度
+  cmd16 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=speed_shoulder) # 指令16：移动大臂到目标位置的指定角度
+  cmd17 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=speed_elbow) # 指令17：移动小臂到目标位置的指定角度
+  cmd18 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令18：竖轴下降
   cmd19 = CreateCommand_SetElectroMagnet(status=0x00) # 指令19：电磁铁断电
 
   _, _, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.tsm.PositionShoulder, gVar.tsm.PositionElbow, 0.0) # 只更新竖轴位置为0.0
@@ -339,8 +378,9 @@ def CreateCommandList_DriveMotor_CapOppoPiece(StartPosIndex, TargetPosIndex):
 
   # 组合向待机位移动的指令
   dStepShoulder, dStepElbow, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.DegAngle_StandByPos_Shoulder, gVar.DegAngle_StandByPos_Ebow, gVar.DegAngle_StandByPos_Lift) # 更新三轴的位置，并获取转动步数
-  cmd21 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=200) # 指令21：移动大臂到待机位置的指定角度
-  cmd22 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=200) # 指令22：移动小臂到待机位置的指定角度
+  speed_shoulder, speed_elbow = allocate_two_motor_time(dStepShoulder, dStepElbow, deg_per_sec) # 分配平面两轴速度
+  cmd21 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorShoulder_Index, ActionType=0x01, Steps=dStepShoulder, Speed=speed_shoulder) # 指令21：移动大臂到待机位置的指定角度
+  cmd22 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorElbow_Index, ActionType=0x01, Steps=dStepElbow, Speed=speed_elbow) # 指令22：移动小臂到待机位置的指定角度
 
   return [cmd1, cmd2, cmd3, cmd4, cmd5, cmd6, cmd7, cmd8, cmd9, cmd10, cmd11, cmd12, cmd13, cmd14, cmd15, cmd16, cmd17, cmd18, cmd19, cmd20, cmd21, cmd22] # 指令列表，每个元素都是一个字节数组
 
