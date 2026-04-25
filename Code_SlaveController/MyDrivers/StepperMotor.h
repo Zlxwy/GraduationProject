@@ -24,7 +24,7 @@ typedef enum {
 } StepperMotor_Direction_t;
 
 typedef enum {
-  /*未设置*/StepperMotor_FadeState_Unset = 0,
+  /*未设置*/StepperMotor_FadeState_Idle = 0,
   /*加速*/StepperMotor_FadeState_Accel = 1,
   /*保持速度*/StepperMotor_FadeState_Keep = 2,
   /*减速*/StepperMotor_FadeState_Decel = 3,
@@ -43,18 +43,16 @@ typedef struct {
   /*方向状态*/StepperMotor_Direction_t Direction; // （实时变化）
 
   /*电机是否正在转动*/StepperMotor_RunState_t RunState; // 用于获取电机状态（实时变化）
-  /*本轮输出总脉冲数*/uint64_t TargetPulsesToOutput; // 用于指定步数旋转
-  /*当前已输出脉冲数*/uint64_t CurrentOutputedPulses; // 用于指定步数旋转
+  /*本轮输出总脉冲数*/uint64_t TargetPulsesToOutput;
+  /*当前已输出脉冲数*/uint64_t CurrentOutputedPulses;
 
-  /*以下这些成员用于步进电机的缓启停功能*/
-  /*目标输出PWM速度对应的ARR*/uint32_t TargetArr; // 输出一系列脉冲时所需的速度，对应的ARR值，用于电机的缓启停功能
-  /*最大可输出PWM频率对应的ARR*/uint32_t ArrAtMaxSpeed; // 最大的速度对应着最小的ARR，为2，小于这个的ARR都不可设置
-  /*最小可输出PWM频率对应的ARR*/uint32_t ArrAtMinSpeed; // 最小的速度对应着最大的ARR，为65535，大于这个的ARR都不可设置
-  /*最大单段缓冲最大用时*/uint16_t MaxSingleFadeTime; // 单位：ms
-  /*实际单段缓冲最大用时*/uint16_t UsedSingleFadeTime; // 单位：ms
-  /*缓冲状态*/StepperMotor_FadeState_t FadeState; // （实时变化）
-  /*速度保持计数器*/uint32_t FreqHoldTimeCnt; // 在速度保持的时候开始递增，输出脉冲超过一半后递减，用以定位减速的区间
-  /*速度保持计数器计数方向*/bool IsFreqHoldTimeCntIncreasing; // 为true时速度保持计数器递增，为false时递减，用以定位减速的区间
+  /*用于缓启停的成员*/
+  /*PWM目标输出速度对应的ARR值*/uint32_t TargetArrValue;
+  /*PWM最大频率对应的ARR值*/uint32_t ArrAtMaxSpeed; // 最大的速度对应着最小的ARR，为2，小于这个的ARR都不可设置
+  /*PWM最小频率对应的ARR值*/uint32_t ArrAtMinSpeed; // 最小的速度对应着最大的ARR，为65535，大于这个的ARR都不可设置
+  /*最大单段缓冲步数*/uint64_t MaxSingleFadeSteps;
+  /*实际使用的单段缓冲步数*/uint64_t UsedSingleFadeSteps;
+  /*电机缓启停状态机*/StepperMotor_FadeState_t FadeState;
 } StepperMotor_t;
 
 void StepperMotor_Init(StepperMotor_t *cThis,
@@ -71,16 +69,15 @@ StepperMotor_RunState_t StepperMotor_GetRunState(StepperMotor_t *cThis);
 void StepperMotor_SetDirection(StepperMotor_t *cThis, StepperMotor_Direction_t dir);
 void StepperMotor_SetPrescaler(StepperMotor_t *cThis, uint32_t prescaler);
 void StepperMotor_SetAutoReload(StepperMotor_t *cThis, uint32_t arr);
-
 void StepperMotor_StartOutputPWM(StepperMotor_t *cThis);
 void StepperMotor_ClearOutputPWM(StepperMotor_t *cThis);
 
 void StepperMotor_FuncCalled_InTimerInterrupt(StepperMotor_t *cThis);
 
 void StepperMotor_Stop(StepperMotor_t *cThis);
-void StepperMotor_MoveSteps(StepperMotor_t *cThis, int64_t steps, uint32_t speed);
+void StepperMotor_MoveSteps(StepperMotor_t *cThis, int64_t Steps, uint32_t speed);
 void StepperMotor_RunContinuous(StepperMotor_t *cThis, StepperMotor_Direction_t dir, uint32_t speed);
-// uint32_t StepperMotor_SetSpeed(StepperMotor_t *cThis, uint32_t speed);
-// void StepperMotor_SetSpeedWithoutCheck(StepperMotor_t *cThis, uint32_t speed);
+void StepperMotor_SetSpeed(StepperMotor_t *cThis, uint32_t Speed);
+void StepperMotor_SetSpeedWithoutCheck(StepperMotor_t *cThis, uint32_t Speed);
 
 #endif // #ifndef __STEPPER_MOTOR_H__
