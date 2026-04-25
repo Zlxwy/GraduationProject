@@ -60,7 +60,6 @@ void ReadWorkerTaskFunc(void *argument) {
     84000000, // 内部时钟为84MHz
     7-1, // 进行预分频，7分频，得到84MHz/7=12MHz的CNT计数频率
     4000-1, // 设置自动重装载值为4000，得到12MHz/4000=3kHz的PWM频率
-    50, // 高电平占空比50%
     StepperMotorShoulder_Dir_GPIO_Port, // 方向引脚端口
     StepperMotorShoulder_Dir_Pin, // 方向引脚引脚
     GPIO_PIN_RESET // 低电平为正转、即肩关节逆时针转
@@ -72,7 +71,6 @@ void ReadWorkerTaskFunc(void *argument) {
     168000000, // 内部时钟为168MHz
     14-1, // 进行预分频，14分频，得到168MHz/14=12MHz的CNT计数频率
     4000-1, // 设置自动重装载值为4000，得到12MHz/4000=3kHz的PWM频率
-    50, // 高电平占空比50%
     StepperMotorElbow_Dir_GPIO_Port, // 方向引脚端口
     StepperMotorElbow_Dir_Pin, // 方向引脚引脚
     GPIO_PIN_SET // 高电平为正转，即肘关节逆时针转
@@ -84,7 +82,6 @@ void ReadWorkerTaskFunc(void *argument) {
     168000000, // 内部时钟为168MHz
     14-1, // 进行预分频，14分频，得到168MHz/14=12MHz的CNT计数频率
     4000-1, // 设置自动重装载值为4000，得到12MHz/4000=3kHz的PWM频率
-    50, // 高电平占空比50%
     StepperMotorLift_Dir_GPIO_Port, // 方向引脚端口
     StepperMotorLift_Dir_Pin, // 方向引脚引脚
     GPIO_PIN_RESET // 低电平为正转，即竖轴下降
