@@ -305,7 +305,7 @@ def CreateCommandList_DriveMotor_CapOppoPiece(StartPosIndex, TargetPosIndex):
   cmd4 = CreateCommand_SetElectroMagnet(status=0x01) # 指令4：电磁铁通电
   
   _, _, dStepLift = gVar.tsm.DRIVE_MOTOR(gVar.tsm.PositionShoulder, gVar.tsm.PositionElbow, 0.0) # 只更新竖轴位置为0.0
-  cmd5 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=800) # 指令5：竖轴上升
+  cmd5 = CreateCommand_BasicMove(MotorId=gVar.StepperMotorLift_Index, ActionType=0x01, Steps=dStepLift, Speed=speed_lift) # 指令5：竖轴上升
 
   try:
     DegAngle_CapBoxPos_Shoulder, DegAngle_CapBoxPos_Elbow = decompose_vector( # 矢量分解，计算双连杆角度
@@ -584,7 +584,7 @@ if __name__ == "__main__":
       gVar.RoiStartY : gVar.RoiStartY + gVar.RoiHeight,
       gVar.RoiStartX : gVar.RoiStartX + gVar.RoiWidth
     ] # 提取ROI区域
-    frame_roi_cp = frame_roi.copy() # 复制ROI区域，一张纯净的图像帧，用来进行一些识别操作
+    frame_roi_cp = frame_roi.copy() # 复制ROI区域，一张纯净的图像帧，还没有绘制任何东西，用来进行一些识别操作
     cv2.putText(frame_roi, f"{gVar.CurrMode}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
 
 
