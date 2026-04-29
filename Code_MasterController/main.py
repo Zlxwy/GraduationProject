@@ -4,6 +4,7 @@
 # from Thread_Main import MainThreadFunc
 import os
 import cv2
+import sys
 import time
 import math
 import copy
@@ -460,12 +461,7 @@ if __name__ == "__main__":
 
 
   try:
-    UartDevice = None # 初始为None
-    match gVar.MyDevice: # 根据不同设备选择不同的串口设备
-      case "Windows": UartDevice = "COM9"
-      case "Linux": UartDevice = "/dev/ttyS1"
-      case _: UartDevice = None
-    gVar.MainStream = UartStream(port=UartDevice, baudrate=115200) # 创建 UartStream 实例
+    gVar.MainStream = UartStream(port=sys.argv[1], baudrate=115200) # 创建 UartStream 实例
     gVar.MainStream.start() # 启动 UartStream 实例
     gVar.logger.PrintString("Info: 串口流已成功启动") # 打印 UartStream 实例已启动信息
   except Exception as e:
