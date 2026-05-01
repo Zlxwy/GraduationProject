@@ -76,8 +76,8 @@ class ThreeStepperMotor:
       dPos = step * (360/800) * (20/36)
       # dPos = step * 0.25
     elif StepperMotorType == "Lift":
-      # 竖轴电机下降到最底部触碰到棋子需要1230步，计算出步数所占1230的比例即可
-      dPos = step * 100 / 1230
+      # 竖轴电机下降到最底部触碰到棋子需要1280步，计算出步数所占1280的比例即可
+      dPos = step * 100 / 1280
       # dPos = step * 0.08163265306122448979591836734694
       # dPos = step * 0.08163265
     return dPos
@@ -98,7 +98,7 @@ class ThreeStepperMotor:
       dStep = int(Position / (20/36) / (360/800))
       # dStep = int(Position * 4.0)
     elif StepperMotorType == "Lift":
-      dStep = int(Position * 1230 / 100)
+      dStep = int(Position * 1280 / 100)
       # dStep = int(Position * 12.3)
     return dStep
 
